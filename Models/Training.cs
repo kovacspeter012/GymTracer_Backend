@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace GymTracer.models;
+
+public partial class Training
+{
+    public long Id { get; set; }
+
+    [Required]
+    public long TrainerId { get; set; }
+
+    [Required]
+    public string Name { get; set; } = null!;
+
+    [Required]
+    public string Description { get; set; } = null!;
+
+    [Required]
+    public string Image { get; set; } = null!;
+
+    [Required]
+    public DateTime StartTime { get; set; }
+
+    [Required]
+    public DateTime EndTime { get; set; }
+
+    [Required]
+    public ulong MaxParticipant { get; set; }
+
+    public virtual User Trainer { get; set; } = null!;
+
+    public virtual ICollection<TrainingTicket> TrainingTickets { get; set; } = new List<TrainingTicket>();
+
+    public virtual ICollection<TrainingUser> TrainingUsers { get; set; } = new List<TrainingUser>();
+}
