@@ -17,12 +17,15 @@ public partial class User
     public long Id { get; set; }
 
     [Required]
+    [StringLength(100)]
     public string Name { get; set; } = null!;
 
     [Required]
+    [StringLength(100)]
     public string Email { get; set; } = null!;
 
     [Required]
+    [StringLength(100)]
     public string Password { get; set; } = null!;
 
     public DateTime? BirthDate { get; set; }

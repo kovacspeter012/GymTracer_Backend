@@ -1,0 +1,74 @@
+﻿[
+    {
+        "Id": 1,
+        "Type": 1,
+        "Description": "Standard Daily Pass",
+        "IsStudent": 0,
+        "Price": 5000,
+        "Tax_key": 27.00,
+        "MaxUsage": 1
+    },
+    {
+        "Id": 2,
+        "Type": 1,
+        "Description": "Student Daily Pass",
+        "IsStudent": 1,
+        "Price": 2500,
+        "Tax_key": 27.00,
+        "MaxUsage": 1
+    },
+    {
+        "Id": 3,
+        "Type": 2,
+        "Description": "Monthly Full Pass",
+        "IsStudent": 0,
+        "Price": 45000,
+        "Tax_key": 27.00,
+        "MaxUsage": null
+    },
+    {
+        "Id": 4,
+        "Type": 2,
+        "Description": "Student Monthly Pass",
+        "IsStudent": 1,
+        "Price": 22500,
+        "Tax_key": 27.00,
+        "MaxUsage": null
+    },
+    {
+        "Id": 5,
+        "Type": 3,
+        "Description": "10-Occasion Pass",
+        "IsStudent": 0,
+        "Price": 40000,
+        "Tax_key": 27.00,
+        "MaxUsage": 10
+    },
+    {
+        "Id": 6,
+        "Type": 3,
+        "Description": "Student 10-Occasion",
+        "IsStudent": 1,
+        "Price": 20000,
+        "Tax_key": 27.00,
+        "MaxUsage": 10
+    },
+    {
+        "Id": 7,
+        "Type": 0,
+        "Description": "Standard Training Ticket",
+        "IsStudent": 0,
+        "Price": 6000,
+        "Tax_key": 27.00,
+        "MaxUsage": 1
+    },
+    {
+        "Id": 8,
+        "Type": 0,
+        "Description": "Student Training Ticket",
+        "IsStudent": 1,
+        "Price": 3000,
+        "Tax_key": 27.00,
+        "MaxUsage": 1
+    }
+]

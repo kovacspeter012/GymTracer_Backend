@@ -30,7 +30,7 @@ public partial class Ticket
     public ulong Price { get; set; }
 
     [Required]
-    [Column(TypeName = "decimal(5, 2)")]
+    [Column(TypeName = "decimal(5, 2) unsigned")]
     public decimal Tax_key { get; set; }
 
     public ulong? MaxUsage { get; set; }

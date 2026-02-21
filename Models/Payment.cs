@@ -20,6 +20,7 @@ public partial class Payment
     public ulong TotalPrice { get; set; }
 
     [Required]
+    [StringLength(20)]
     public string ReceiptNumber { get; set; } = null!;
 
     public virtual User Issuer { get; set; } = null!;

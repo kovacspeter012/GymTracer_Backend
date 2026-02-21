@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace GymTracer.models;
 
@@ -17,7 +18,8 @@ public partial class Token
     public DateTime? RevokedAt { get; set; }
 
     [Required]
-    public string Token1 { get; set; } = null!;
+    [StringLength(128)]
+    public string TokenString { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
 }

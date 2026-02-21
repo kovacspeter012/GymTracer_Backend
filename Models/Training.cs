@@ -12,12 +12,14 @@ public partial class Training
     public long TrainerId { get; set; }
 
     [Required]
+    [StringLength(100)]
     public string Name { get; set; } = null!;
 
     [Required]
     public string Description { get; set; } = null!;
 
     [Required]
+    [StringLength(100)]
     public string Image { get; set; } = null!;
 
     [Required]
