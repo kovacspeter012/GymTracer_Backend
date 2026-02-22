@@ -15,7 +15,8 @@ public partial class Token
     [Required]
     public DateTime CreatedAt { get; set; }
 
-    public DateTime? RevokedAt { get; set; }
+    [Required]
+    public DateTime RevokedAt { get; set; }
 
     [Required]
     [StringLength(128)]
