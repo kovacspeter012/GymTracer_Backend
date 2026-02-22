@@ -1,5 +1,9 @@
 
+using GymTracer.Auth;
 using GymTracer.Context;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymTracer
@@ -23,6 +27,31 @@ namespace GymTracer
                 o.UseMySQL(connString);
             });
 
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "MyAuthentication";
+
+            }).AddScheme<AuthOptions, AuthHandler>("MyAuthentication", options =>
+            {
+                var expirationString = builder.Configuration["authConfig:expirationInMinutes"];
+
+                if (double.TryParse(expirationString, out double parsedMinutes))
+                {
+                    options.ExpirationInMinutes = parsedMinutes;
+                }
+            });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                var sessionTokenPolicy = new AuthorizationPolicyBuilder().RequireClaim("SessionToken").Build();
+
+                options.AddPolicy("SessionToken", sessionTokenPolicy);
+
+
+                options.DefaultPolicy = sessionTokenPolicy;
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -34,6 +63,7 @@ namespace GymTracer
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
