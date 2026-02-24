@@ -25,7 +25,7 @@ public partial class User
     public string Email { get; set; } = null!;
 
     [Required]
-    [StringLength(100)]
+    [StringLength(128)]
     public string Password { get; set; } = null!;
 
     public DateTime? BirthDate { get; set; }
