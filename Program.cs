@@ -54,6 +54,11 @@ namespace GymTracer
                 options.DefaultPolicy = sessionTokenPolicy;
             });
 
+            builder.Services.Configure<TokenOptions>(
+            builder.Configuration.GetSection(TokenOptions.SectionName));
+
+            builder.Services.AddSingleton<TokenHandler>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

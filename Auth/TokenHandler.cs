@@ -1,12 +1,20 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.Extensions.Options;
+using System.Security.Cryptography;
 
 namespace GymTracer.Auth
 {
-    public static class TokenHandler
+    public class TokenHandler
     {
-        public static string GenerateToken(int length)
+        private readonly int length;
+        public TokenHandler(IOptions<TokenOptions> options)
         {
-            return RandomNumberGenerator.GetHexString(128);
+            var settings = options.Value;
+
+            this.length = settings.Length;
+        }
+        public string GenerateToken()
+        {
+            return RandomNumberGenerator.GetHexString(length);
         }
     }
 }
