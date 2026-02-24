@@ -1,9 +1,12 @@
+using GymTracer.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymTracer.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.admin))]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
