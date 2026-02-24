@@ -59,6 +59,10 @@ namespace GymTracer
 
             builder.Services.AddSingleton<TokenHandler>();
 
+            builder.Services.Configure<PasswordOptions>(
+                builder.Configuration.GetSection(PasswordOptions.SectionName));
+            builder.Services.AddSingleton<PasswordHandler>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
