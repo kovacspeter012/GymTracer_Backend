@@ -43,7 +43,7 @@ namespace GymTracer.Controllers
 
             var isUsedEmail = dbContext.Users.Any(u => u.Email == User.Email);
             if(isUsedEmail)
-                return BadRequest(new { error = "Az email címnek egyedinek kell lennie" });
+                return BadRequest(new { error = "Az email cím már használatban van" });
 
             try
             {
