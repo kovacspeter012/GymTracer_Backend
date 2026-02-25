@@ -36,6 +36,9 @@ public partial class User
     [Required]
     public DateTime CreationDate { get; set; }
 
+    [Required]
+    public bool Active { get; set; }
+
     public virtual ICollection<Card> Cards { get; set; } = new List<Card>();
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
