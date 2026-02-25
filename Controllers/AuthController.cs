@@ -13,11 +13,13 @@ namespace GymTracer.Controllers
     {
         private readonly GymTracerDbContext dbContext;
         private readonly PasswordHandler passwordHandler;
+        private readonly TokenHandler tokenHandler;
 
-        public AuthController(GymTracerDbContext dbContext, PasswordHandler passwordHandler)
+        public AuthController(GymTracerDbContext dbContext, PasswordHandler passwordHandler, TokenHandler tokenHandler)
         {
             this.dbContext = dbContext;
             this.passwordHandler = passwordHandler;
+            this.tokenHandler = tokenHandler;
         }
 
         [GeneratedRegex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")]
@@ -67,6 +69,33 @@ namespace GymTracer.Controllers
             }
 
             return Ok(new { message = "Sikeres regisztráció!"} );
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] UserLoginDto? User)
+        {
+            if (User is null || string.IsNullOrEmpty(User.Email) || string.IsNullOrEmpty(User.Password))
+                return BadRequest(new { error = "Hibás adatok!" });
+
+            var dbUser = dbContext.Users.FirstOrDefault(u => u.Email == User.Email);
+            if (dbUser is null || !passwordHandler.ComparePasswords(User.Password, dbUser.Password))
+                return BadRequest(new { error = "Hibás email cím vagy jelszó!" });
+
+            tokenHandler.GenerateTokenData(out string tokenString, out DateTime createdAt, out DateTime revokedAt);
+
+            dbContext.Tokens.Add(new models.Token {
+                UserId = dbUser.Id,
+                CreatedAt = createdAt,
+                RevokedAt = revokedAt,
+                TokenString = tokenString
+            });
+            dbContext.SaveChanges();
+
+            return Ok(new {
+                message = "Sikeres bejelentkezés!",
+                token = tokenString,
+                validTo = revokedAt,
+            });
         }
     }
 }
