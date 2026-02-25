@@ -50,13 +50,15 @@ namespace GymTracer.Controllers
                 }
                 cardsIds.Add(1);
 
-                return StatusCode(200, new {user = new {
-                    name = user.Name,
-                    email = user.Email,
-                    birthDate = user.BirthDate,
-                    creationDate = user.CreationDate,
-                    cards = cardsIds,
-                } });
+                return StatusCode(200, new {
+                    user = new {
+                        name = user.Name,
+                        email = user.Email,
+                        birthDate = user.BirthDate,
+                        creationDate = user.CreationDate,
+                        cards = cardsIds,
+                    } 
+                });
             }
         }
 
@@ -64,22 +66,53 @@ namespace GymTracer.Controllers
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         public IActionResult ModifyUserData([FromBody] dynamic body, int id)
         {
-            User user = null!;
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+
+            if (user == null)
+            {
+                return StatusCode(404, new { error = "User not found!" });
+            }
+            if (!(id.ToString() == loggedInUserId || (user.Role == User_Role.staff || user.Role == User_Role.admin)))
+            {
+                return StatusCode(401, new { error = "Unauthorized" });
+            }
+
+            User userToModifyWith = null!;
             try
             {
                 var options = new JsonSerializerOptions()
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                user = JsonSerializer.Deserialize<User>(body, options) ?? new User();
+                userToModifyWith = JsonSerializer.Deserialize<User>(body, options) ?? new User();
             }
             catch
             {
-                return StatusCode(400, new { error = "Bad body structure" });
+                return StatusCode(400, new { error = "Incorrect Body Structure" });
             }
 
-            return StatusCode(200);
+            var userToModify = DbContext.Set<User>().SingleOrDefault(g => g.Id == id);
 
+            try
+            {
+                if (userToModify != null)
+                {
+                    userToModify.UpdateFrom(userToModifyWith);
+                    DbContext.Update(userToModify);
+                    DbContext.SaveChanges();
+                    return GetUserById(id);
+                }
+                else
+                {
+                    return StatusCode(400, new { error = "Record not found" });
+                }
+            }
+            catch
+            {
+                return StatusCode(500, new { error = "Incorrect Data" });
+            }
         }
 
     }

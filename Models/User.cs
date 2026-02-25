@@ -47,4 +47,12 @@ public partial class User
     public virtual ICollection<TrainingUser> TrainingUsers { get; set; } = new List<TrainingUser>();
 
     public virtual ICollection<UserTicket> UserTickets { get; set; } = new List<UserTicket>();
+
+    public void UpdateFrom(User model)
+    {
+        Name = model.Name;
+        Email = model.Email;
+        Password = model.Password;
+        BirthDate = model.BirthDate;
+    }
 }
