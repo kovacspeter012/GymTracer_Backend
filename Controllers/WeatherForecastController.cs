@@ -1,3 +1,5 @@
+using GymTracer.Exceptions;
+using GymTracer.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymTracer.Controllers
@@ -28,6 +30,15 @@ namespace GymTracer.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            return this.Run(() =>
+            {
+                throw new ApiException(500,"TestError");
+            });
         }
     }
 }
