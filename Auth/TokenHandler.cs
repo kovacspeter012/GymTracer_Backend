@@ -5,16 +5,14 @@ namespace GymTracer.Auth
 {
     public class TokenHandler
     {
-        private readonly int length;
-        public TokenHandler(IOptions<TokenOptions> options)
+        private readonly AuthOptions authSettings;
+        public TokenHandler(IOptions<AuthOptions> authOptions)
         {
-            var settings = options.Value;
-
-            this.length = settings.Length;
+            this.authSettings = authOptions.Value;
         }
         public string GenerateToken()
         {
-            return RandomNumberGenerator.GetHexString(length);
+            return RandomNumberGenerator.GetHexString(authSettings.TokenLength);
         }
     }
 }

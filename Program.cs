@@ -54,8 +54,8 @@ namespace GymTracer
                 options.DefaultPolicy = sessionTokenPolicy;
             });
 
-            builder.Services.Configure<TokenOptions>(
-            builder.Configuration.GetSection(TokenOptions.SectionName));
+            builder.Services.Configure<AuthOptions>(
+                builder.Configuration.GetSection(AuthOptions.SectionName));
 
             builder.Services.AddSingleton<TokenHandler>();
 
