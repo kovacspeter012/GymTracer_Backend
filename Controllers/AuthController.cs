@@ -3,6 +3,7 @@ using GymTracer.Context;
 using GymTracer.Models.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace GymTracer.Controllers
@@ -102,6 +103,32 @@ namespace GymTracer.Controllers
                 token = tokenString,
                 validTo = revokedAt,
             });
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            string? tokenString = User.Claims.FirstOrDefault(c => c.Type == "SessionToken")?.Value;
+
+            if(tokenString is null)
+                return BadRequest(new { error = "A token invalid!" });
+
+            models.Token? token = dbContext.Tokens.FirstOrDefault(t => t.TokenString == tokenString);
+
+            if (token is null)
+                return BadRequest(new { error = "A token invalid!" });
+
+            DateTime now = tokenHandler.Now();
+
+            // Ha még nem járt le a token
+            if (token.RevokedAt > now)
+            {
+                token.RevokedAt = now;
+                dbContext.Update(token);
+                dbContext.SaveChanges();
+            }
+
+            return Ok(new { message = "Sikeres kijelentkezés!" });
         }
     }
 }

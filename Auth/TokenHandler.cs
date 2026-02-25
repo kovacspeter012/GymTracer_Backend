@@ -16,6 +16,12 @@ namespace GymTracer.Auth
             createdAt = DateTime.UtcNow;
             revokedAt = DateTime.UtcNow.AddMinutes(authSettings.ExpirationInMinutes);
         }
+
+        public DateTime Now()
+        {
+            return DateTime.UtcNow;
+        }
+
         private string GenerateTokenString()
         {
             return RandomNumberGenerator.GetHexString(authSettings.TokenLength);
