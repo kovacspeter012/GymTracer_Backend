@@ -93,6 +93,12 @@ namespace GymTracer.Controllers
 
             return Ok(new {
                 message = "Sikeres bejelentkezés!",
+                user = new {
+                    id = dbUser.Id,
+                    name = dbUser.Name,
+                    email = dbUser.Email,
+                    role = dbUser.Role.ToString(),
+                },
                 token = tokenString,
                 validTo = revokedAt,
             });
