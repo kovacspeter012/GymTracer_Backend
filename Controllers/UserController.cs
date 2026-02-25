@@ -60,7 +60,27 @@ namespace GymTracer.Controllers
             }
         }
 
-        
+        [HttpPut("/{id}/profile")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult ModifyUserData([FromBody] dynamic body, int id)
+        {
+            User user = null!;
+            try
+            {
+                var options = new JsonSerializerOptions()
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                user = JsonSerializer.Deserialize<User>(body, options) ?? new User();
+            }
+            catch
+            {
+                return StatusCode(400, new { error = "Bad body structure" });
+            }
+
+            return StatusCode(200);
+
+        }
 
     }
 }
