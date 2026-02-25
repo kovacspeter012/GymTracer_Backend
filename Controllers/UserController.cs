@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace GymTracer.Controllers
@@ -14,6 +15,8 @@ namespace GymTracer.Controllers
     {
         private GymTracerDbContext DbContext;
 
+        
+
         public UserController(GymTracerDbContext dbContext) {
             this.DbContext = dbContext;
         }
@@ -22,29 +25,42 @@ namespace GymTracer.Controllers
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) +  "," + nameof(User_Role.admin))]
         public IActionResult GetUserById(int id)
         {
-            var user = DbContext.Set<User>().Include(u=> u.Cards).FirstOrDefault(u => u.Id == id);
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
 
             if (user == null)
             {
                 return StatusCode(404,new { error = "User not found!" });
             }
+
+            
+
+            if (!(user.Id.ToString() == loggedInUserId || (user.Role == User_Role.staff || user.Role == User_Role.admin)))
+            {
+                return StatusCode(401, new { error = "Unauthorized" });
+            }
             else
             {
+                var cardOfUser = DbContext.Set<Card>().Where(c => c.UserId == user.Id);  
                 List<long> cardsIds = [];
-                foreach (var c in user.Cards)
+                foreach (var c in cardOfUser)
                 {
                     cardsIds.Add(c.Id);
                 }
+                cardsIds.Add(1);
 
                 return StatusCode(200, new {user = new {
                     name = user.Name,
                     email = user.Email,
                     birthDate = user.BirthDate,
                     creationDate = user.CreationDate,
-                    cards = user.Cards,
+                    cards = cardsIds,
                 } });
             }
         }
+
         
+
     }
 }
