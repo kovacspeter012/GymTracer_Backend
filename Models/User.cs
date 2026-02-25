@@ -25,7 +25,7 @@ public partial class User
     public string Email { get; set; } = null!;
 
     [Required]
-    [StringLength(100)]
+    [StringLength(128)]
     public string Password { get; set; } = null!;
 
     public DateTime? BirthDate { get; set; }
@@ -35,6 +35,9 @@ public partial class User
 
     [Required]
     public DateTime CreationDate { get; set; }
+
+    [Required]
+    public bool Active { get; set; }
 
     public virtual ICollection<Card> Cards { get; set; } = new List<Card>();
 
@@ -47,4 +50,12 @@ public partial class User
     public virtual ICollection<TrainingUser> TrainingUsers { get; set; } = new List<TrainingUser>();
 
     public virtual ICollection<UserTicket> UserTickets { get; set; } = new List<UserTicket>();
+
+    public void UpdateFrom(User model)
+    {
+        Name = model.Name;
+        Email = model.Email;
+        Password = model.Password;
+        BirthDate = model.BirthDate;
+    }
 }

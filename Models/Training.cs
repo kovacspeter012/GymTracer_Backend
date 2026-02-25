@@ -31,6 +31,9 @@ public partial class Training
     [Required]
     public ulong MaxParticipant { get; set; }
 
+    [Required]
+    public bool Active { get; set; }
+
     public virtual User Trainer { get; set; } = null!;
 
     public virtual ICollection<TrainingTicket> TrainingTickets { get; set; } = new List<TrainingTicket>();

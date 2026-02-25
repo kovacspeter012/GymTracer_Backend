@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace GymTracer
 {
@@ -21,7 +23,7 @@ namespace GymTracer
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(AddSwaggerAuthButton);
             builder.Services.AddDbContext<GymTracerDbContext>(o =>
             {
                 o.UseMySQL(connString);
@@ -34,13 +36,8 @@ namespace GymTracer
 
             }).AddScheme<AuthOptions, AuthHandler>("MyAuthentication", options =>
             {
-                var expirationString = builder.Configuration["authConfig:expirationInMinutes"];
-
-                if (double.TryParse(expirationString, out double parsedMinutes))
-                {
-                    options.ExpirationInMinutes = parsedMinutes;
-                }
-            });
+                builder.Configuration.GetSection(AuthOptions.SectionName).Bind(options);
+            }).AddBearerToken();
 
             builder.Services.AddAuthorization(options =>
             {
@@ -51,6 +48,15 @@ namespace GymTracer
 
                 options.DefaultPolicy = sessionTokenPolicy;
             });
+
+            builder.Services.Configure<AuthOptions>(
+                builder.Configuration.GetSection(AuthOptions.SectionName));
+
+            builder.Services.AddSingleton<TokenHandler>();
+
+            builder.Services.Configure<PasswordOptions>(
+                builder.Configuration.GetSection(PasswordOptions.SectionName));
+            builder.Services.AddSingleton<PasswordHandler>();
 
             var app = builder.Build();
 
@@ -70,6 +76,39 @@ namespace GymTracer
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static void AddSwaggerAuthButton(SwaggerGenOptions options)
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Unique Bearer Token API",
+                Version = "v1"
+            });
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "Unique",
+                In = ParameterLocation.Header,
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
         }
     }
 }

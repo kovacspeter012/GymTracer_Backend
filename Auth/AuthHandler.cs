@@ -28,7 +28,8 @@ namespace GymTracer.Auth
             if (authorizationHeader.Count == 0)
                 return await Task.FromResult(AuthenticateResult.NoResult());
 
-            var tokenString = authorizationHeader.ToString();
+            //Authorization: Bearer TOKEN----
+            var tokenString = authorizationHeader.ToString().Replace("Bearer ","").Trim();
 
             return await HandleToken(tokenString);
         }
