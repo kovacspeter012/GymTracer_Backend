@@ -55,6 +55,7 @@ namespace GymTracer.Controllers
                     Password = passwordHandler.HashPassword(User.Password),
                     CreationDate = DateTime.UtcNow,
                     Role = models.User_Role.customer,
+                    Active = true,
                 });
 
                 dbContext.SaveChanges();
@@ -79,7 +80,7 @@ namespace GymTracer.Controllers
                 return BadRequest(new { error = "Hibás adatok!" });
 
             var dbUser = dbContext.Users.FirstOrDefault(u => u.Email == User.Email);
-            if (dbUser is null || !passwordHandler.ComparePasswords(User.Password, dbUser.Password))
+            if (dbUser is null || !dbUser.Active || !passwordHandler.ComparePasswords(User.Password, dbUser.Password))
                 return BadRequest(new { error = "Hibás email cím vagy jelszó!" });
 
             tokenHandler.GenerateTokenData(out string tokenString, out DateTime createdAt, out DateTime revokedAt);
