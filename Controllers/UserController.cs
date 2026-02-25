@@ -115,5 +115,35 @@ namespace GymTracer.Controllers
             }
         }
 
+        [HttpDelete("/{id}")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult DeactivateUser(int id)
+        {
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+
+            if (user == null)
+            {
+                return StatusCode(404, new { error = "User not found!" });
+            }
+            if (!(id.ToString() == loggedInUserId || (user.Role == User_Role.staff || user.Role == User_Role.admin)))
+            {
+                return StatusCode(401, new { error = "Unauthorized" });
+            }
+
+            var userToDeactivate = DbContext.Set<User>().SingleOrDefault(g => g.Id == id);
+            if (userToDeactivate != null && userToDeactivate.Active != false)
+            {
+                userToDeactivate.Active = false;
+                DbContext.Update(userToDeactivate);
+                DbContext.SaveChanges();
+                return StatusCode(204);
+            }
+            else
+            {
+                return StatusCode(400, new { error = "Record not found" });
+            }
+        }
     }
 }
