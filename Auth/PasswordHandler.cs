@@ -22,7 +22,7 @@ namespace GymTracer.Auth
             if (passwordParts[1].ToLower() != "pbkdf2")
                 return false;
 
-            HashAlgorithmName hashAlgorithm = new HashAlgorithmName(passwordParts[2].ToLower());
+            HashAlgorithmName hashAlgorithm = new HashAlgorithmName(passwordParts[2].ToUpper());
 
             if (!int.TryParse(passwordParts[3], out int iterations))
                 return false;

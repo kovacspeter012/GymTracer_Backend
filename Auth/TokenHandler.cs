@@ -10,7 +10,13 @@ namespace GymTracer.Auth
         {
             this.authSettings = authOptions.Value;
         }
-        public string GenerateToken()
+        public void GenerateTokenData(out string tokenString, out DateTime createdAt, out DateTime revokedAt)
+        {
+            tokenString = GenerateTokenString();
+            createdAt = DateTime.UtcNow;
+            revokedAt = DateTime.UtcNow.AddMinutes(authSettings.ExpirationInMinutes);
+        }
+        private string GenerateTokenString()
         {
             return RandomNumberGenerator.GetHexString(authSettings.TokenLength);
         }
