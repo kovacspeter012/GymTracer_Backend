@@ -36,12 +36,7 @@ namespace GymTracer
 
             }).AddScheme<AuthOptions, AuthHandler>("MyAuthentication", options =>
             {
-                var expirationString = builder.Configuration["authConfig:expirationInMinutes"];
-
-                if (double.TryParse(expirationString, out double parsedMinutes))
-                {
-                    options.ExpirationInMinutes = parsedMinutes;
-                }
+                builder.Configuration.GetSection(AuthOptions.SectionName).Bind(options);
             }).AddBearerToken();
 
             builder.Services.AddAuthorization(options =>
