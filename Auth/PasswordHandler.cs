@@ -5,18 +5,12 @@ namespace GymTracer.Auth
 {
     public class PasswordHandler
     {
+        private readonly PasswordOptions passwordSettings;
         private readonly HashAlgorithmName algorithm;
-        private readonly int iterations;
-        private readonly int hashLength;
-        private readonly int saltLength;
-        public PasswordHandler(IOptions<PasswordOptions> options)
+        public PasswordHandler(IOptions<PasswordOptions> passwordOptions)
         {
-            var settings = options.Value;
-
-            this.algorithm = new HashAlgorithmName(settings.AlgorithmName);
-            this.iterations = settings.Iterations;
-            this.hashLength = settings.HashLength;
-            this.saltLength = settings.SaltLength;
+            this.passwordSettings = passwordOptions.Value;
+            this.algorithm = new HashAlgorithmName(passwordSettings.AlgorithmName);
         }
 
         public bool ComparePasswords(string password, string passwordHash)
@@ -60,7 +54,7 @@ namespace GymTracer.Auth
 
         public string HashPassword(string password, byte[] salt)
         {
-            return HashPassword(password, salt, this.iterations, this.algorithm, this.hashLength);
+            return HashPassword(password, salt, this.passwordSettings.Iterations, this.algorithm, this.passwordSettings.HashLength);
         }
         private string HashPassword(string password, byte[] salt, int iterations, HashAlgorithmName algorithm, int hashLength)
         {
@@ -74,7 +68,7 @@ namespace GymTracer.Auth
 
         public byte[] GenerateSalt()
         {
-            return RandomNumberGenerator.GetBytes(saltLength);
+            return RandomNumberGenerator.GetBytes(this.passwordSettings.SaltLength);
         }
 
 
