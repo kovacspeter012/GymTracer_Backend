@@ -28,10 +28,12 @@ namespace GymTracer.Controllers
         private static partial Regex EmailRegex();
 
         [HttpPost("registration")]
-        public IActionResult Registration([FromBody] UserRegistrationDto? User)
+        public IActionResult Registration([FromBody] dynamic user)
         {
             return this.Run(() =>
             {
+                models.User User = models.User.Deserialize(user);
+
                 if(User is null || string.IsNullOrEmpty(User.Name) || string.IsNullOrEmpty(User.Email) || string.IsNullOrEmpty(User.Password))
                     return BadRequest(new { error = "Hibás adatok!" });
 
@@ -64,10 +66,12 @@ namespace GymTracer.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] UserLoginDto? User)
+        public IActionResult Login([FromBody] dynamic user)
         {
             return this.Run(() =>
             {
+                models.User User = models.User.Deserialize(user);
+
                 if (User is null || string.IsNullOrEmpty(User.Email) || string.IsNullOrEmpty(User.Password))
                     return BadRequest(new { error = "Hibás adatok!" });
 
