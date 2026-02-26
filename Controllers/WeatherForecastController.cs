@@ -1,3 +1,7 @@
+using GymTracer.Exceptions;
+using GymTracer.Extensions;
+using GymTracer.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymTracer.Controllers
