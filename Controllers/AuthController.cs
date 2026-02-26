@@ -1,7 +1,6 @@
 ﻿using GymTracer.Auth;
 using GymTracer.Context;
 using GymTracer.Extensions;
-using GymTracer.Models.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

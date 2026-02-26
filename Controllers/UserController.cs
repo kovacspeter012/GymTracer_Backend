@@ -8,12 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace GymTracer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public partial class UserController : ControllerBase
     {
         private GymTracerDbContext DbContext;
 
@@ -37,7 +38,6 @@ namespace GymTracer.Controllers
                     {
                         cardsIds.Add(c.Id);
                     }
-                    cardsIds.Add(1);
 
                     return StatusCode(200, new
                     {
@@ -58,6 +58,9 @@ namespace GymTracer.Controllers
             });
         }
 
+        [GeneratedRegex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")]
+        private static partial Regex EmailRegex();
+
         [HttpPut("{id}/profile")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         public IActionResult ModifyUserData([FromBody] dynamic body, int id)
@@ -66,13 +69,16 @@ namespace GymTracer.Controllers
             {
                 if (IsAuthorized(id))
                 {
-                    var options = new JsonSerializerOptions()
-                    {
-                        PropertyNameCaseInsensitive = true
-                    };
-                    var userToModifyWith = JsonSerializer.Deserialize<User>(body, options) ?? new User();
+                    User userToModifyWith = models.User.Deserialize(body);
 
                     var userToModify = DbContext.Set<User>().SingleOrDefault(g => g.Id == id);
+
+                    if (!EmailRegex().Match(userToModifyWith.Email).Success)
+                        return BadRequest(new { error = "Az email címnek validnak kell lennie" });
+
+                    var isUsedEmail = DbContext.Users.Any(u => u.Email == userToModifyWith.Email);
+                    if (isUsedEmail)
+                        return BadRequest(new { error = "Az email cím már használatban van" });
 
                     if (userToModify != null)
                     {
@@ -83,7 +89,7 @@ namespace GymTracer.Controllers
                     }
                     else
                     {
-                        return StatusCode(400, new { error = "Record not found" });
+                        throw new ApiException(404, "User not found");
                     }
                 }
                 else
@@ -102,11 +108,31 @@ namespace GymTracer.Controllers
                 if (IsAuthorized(id))
                 {
                     var userToDeactivate = DbContext.Set<User>().SingleOrDefault(g => g.Id == id);
+
+                    var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == userToDeactivate!.Id).ToList();
+
+                    var tokenOfUser = DbContext.Set<Token>().FirstOrDefault(t => t.UserId == id && t.RevokedAt > DateTime.Now);
+
                     if (userToDeactivate != null && userToDeactivate.Active != false)
                     {
                         userToDeactivate.Active = false;
                         DbContext.Update(userToDeactivate);
                         DbContext.SaveChanges();
+
+                        if (cardsOfUser.Count != 0)
+                        {
+                            foreach (var c in cardsOfUser)
+                            {
+                                c.RevokedAt = DateTime.Now;
+                                DbContext.Update(c);
+                                DbContext.SaveChanges();
+                            }
+                        }
+                        
+                        tokenOfUser!.RevokedAt = DateTime.Now;
+                        DbContext.Update(tokenOfUser);
+                        DbContext.SaveChanges();
+
                         return StatusCode(204);
                     }
                     else
@@ -123,9 +149,12 @@ namespace GymTracer.Controllers
             
         }
 
+        [NonAction]
         public bool IsAuthorized(int id)
         {
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var loggedInUser = DbContext.Set<User>().FirstOrDefault(u => u.Id.ToString() == loggedInUserId);
 
             var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
 
@@ -133,11 +162,11 @@ namespace GymTracer.Controllers
             {
                 throw new ApiException(404, "User not found");
             }
-            if (!(id.ToString() == loggedInUserId || (user.Role == User_Role.staff || user.Role == User_Role.admin)))
+            if (id.ToString() == loggedInUserId || (loggedInUser!.Role == User_Role.staff || loggedInUser.Role == User_Role.admin))
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
     }
 }
