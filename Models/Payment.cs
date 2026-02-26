@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GymTracer.models;
 
-public partial class Payment
+public partial class Payment : ModelBase<Payment>
 {
     public long Id { get; set; }
 

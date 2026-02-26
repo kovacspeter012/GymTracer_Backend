@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GymTracer.models;
 
-public partial class Token
+public partial class Token : ModelBase<Token>
 {
     public long Id { get; set; }
 
