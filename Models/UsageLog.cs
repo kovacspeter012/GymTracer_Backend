@@ -11,7 +11,7 @@ public enum Usage_Gates
     locker_room
 }
 
-public partial class UsageLog
+public partial class UsageLog : ModelBase<UsageLog>
 {
     public long Id { get; set; }
 

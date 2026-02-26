@@ -13,7 +13,7 @@ public enum Ticket_Type
     x_usage
 }
 
-public partial class Ticket
+public partial class Ticket : ModelBase<Ticket>
 {
     public long Id { get; set; }
 

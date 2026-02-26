@@ -12,7 +12,7 @@ public enum User_Role
     admin
 }
 
-public partial class User
+public partial class User : ModelBase<User>
 {
     public long Id { get; set; }
 

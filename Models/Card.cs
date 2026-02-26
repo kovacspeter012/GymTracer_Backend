@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GymTracer.models;
 
-public partial class Card
+public partial class Card : ModelBase<Card>
 {
     public long Id { get; set; }
 
