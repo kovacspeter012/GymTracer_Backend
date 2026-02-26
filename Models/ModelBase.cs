@@ -8,5 +8,10 @@ namespace GymTracer.models
         {
             return json.Deserialize<T>();
         }
+
+        public static T Deserialize(dynamic json)
+        {
+            return Deserialize(json.ToString());
+        }
     }
 }
