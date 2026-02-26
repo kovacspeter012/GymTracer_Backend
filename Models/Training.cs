@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GymTracer.models;
 
-public partial class Training
+public partial class Training : ModelBase<Training>
 {
     public long Id { get; set; }
 
@@ -30,6 +30,9 @@ public partial class Training
 
     [Required]
     public ulong MaxParticipant { get; set; }
+
+    [Required]
+    public bool Active { get; set; }
 
     public virtual User Trainer { get; set; } = null!;
 

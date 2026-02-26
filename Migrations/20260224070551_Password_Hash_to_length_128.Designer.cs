@@ -3,6 +3,7 @@ using System;
 using GymTracer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymTracer.Migrations
 {
     [DbContext(typeof(GymTracerDbContext))]
-    partial class GymTracerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260224070551_Password_Hash_to_length_128")]
+    partial class Password_Hash_to_length_128
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -475,9 +478,6 @@ namespace GymTracer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -520,7 +520,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 1L,
-                            Active = true,
                             Description = "Intro to Yoga",
                             EndTime = new DateTime(2023, 5, 1, 9, 0, 0, 0, DateTimeKind.Utc),
                             Image = "yoga.jpg",
@@ -532,7 +531,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 2L,
-                            Active = true,
                             Description = "High Intensity Interval Training",
                             EndTime = new DateTime(2023, 5, 1, 11, 0, 0, 0, DateTimeKind.Utc),
                             Image = "hiit.jpg",
@@ -544,7 +542,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 3L,
-                            Active = true,
                             Description = "Core strengthening",
                             EndTime = new DateTime(2023, 5, 2, 9, 0, 0, 0, DateTimeKind.Utc),
                             Image = "pilates.jpg",
@@ -556,7 +553,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 4L,
-                            Active = true,
                             Description = "Dance cardio",
                             EndTime = new DateTime(2023, 5, 2, 19, 0, 0, 0, DateTimeKind.Utc),
                             Image = "zumba.jpg",
@@ -568,7 +564,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 5L,
-                            Active = true,
                             Description = "Learn the basics of CrossFit",
                             EndTime = new DateTime(2023, 5, 3, 18, 0, 0, 0, DateTimeKind.Utc),
                             Image = "crossfit.jpg",
@@ -580,7 +575,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 6L,
-                            Active = true,
                             Description = "Indoor cycling",
                             EndTime = new DateTime(2023, 5, 4, 8, 0, 0, 0, DateTimeKind.Utc),
                             Image = "spin.jpg",
@@ -592,7 +586,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 7L,
-                            Active = true,
                             Description = "Pad work and technique",
                             EndTime = new DateTime(2023, 5, 5, 20, 0, 0, 0, DateTimeKind.Utc),
                             Image = "boxing.jpg",
@@ -604,7 +597,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 8L,
-                            Active = true,
                             Description = "Recovery session",
                             EndTime = new DateTime(2023, 5, 6, 11, 0, 0, 0, DateTimeKind.Utc),
                             Image = "stretch.jpg",
@@ -616,7 +608,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 9L,
-                            Active = true,
                             Description = "Squat, Bench, Deadlift",
                             EndTime = new DateTime(2023, 5, 7, 17, 30, 0, 0, DateTimeKind.Utc),
                             Image = "power.jpg",
@@ -628,7 +619,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 10L,
-                            Active = true,
                             Description = "Pool workout",
                             EndTime = new DateTime(2023, 5, 8, 10, 0, 0, 0, DateTimeKind.Utc),
                             Image = "aqua.jpg",
@@ -1006,9 +996,6 @@ namespace GymTracer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime(6)");
 
@@ -1044,7 +1031,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 1L,
-                            Active = true,
                             BirthDate = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 10, 8, 0, 0, 0, DateTimeKind.Utc),
                             Email = "alice@example.com",
@@ -1055,7 +1041,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 2L,
-                            Active = true,
                             BirthDate = new DateTime(1985, 10, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 11, 9, 30, 0, 0, DateTimeKind.Utc),
                             Email = "bob@example.com",
@@ -1066,7 +1051,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 3L,
-                            Active = true,
                             BirthDate = new DateTime(1992, 3, 8, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 12, 10, 15, 0, 0, DateTimeKind.Utc),
                             Email = "charlie@example.com",
@@ -1077,7 +1061,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 4L,
-                            Active = true,
                             BirthDate = new DateTime(1988, 12, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 13, 11, 45, 0, 0, DateTimeKind.Utc),
                             Email = "diana@example.com",
@@ -1088,7 +1071,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 5L,
-                            Active = true,
                             BirthDate = new DateTime(1995, 7, 19, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 14, 14, 20, 0, 0, DateTimeKind.Utc),
                             Email = "evan@example.com",
@@ -1099,7 +1081,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 6L,
-                            Active = true,
                             BirthDate = new DateTime(1993, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 15, 16, 5, 0, 0, DateTimeKind.Utc),
                             Email = "fiona@example.com",
@@ -1110,7 +1091,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 7L,
-                            Active = true,
                             BirthDate = new DateTime(1980, 9, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 16, 18, 50, 0, 0, DateTimeKind.Utc),
                             Email = "george@example.com",
@@ -1121,7 +1101,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 8L,
-                            Active = true,
                             BirthDate = new DateTime(1998, 4, 25, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 17, 7, 10, 0, 0, DateTimeKind.Utc),
                             Email = "hannah@example.com",
@@ -1132,7 +1111,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 9L,
-                            Active = true,
                             BirthDate = new DateTime(1975, 11, 11, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 18, 12, 35, 0, 0, DateTimeKind.Utc),
                             Email = "ian@example.com",
@@ -1143,7 +1121,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 10L,
-                            Active = true,
                             BirthDate = new DateTime(1999, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 19, 15, 25, 0, 0, DateTimeKind.Utc),
                             Email = "jane@example.com",
@@ -1154,7 +1131,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 11L,
-                            Active = true,
                             BirthDate = new DateTime(1999, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 19, 15, 25, 0, 0, DateTimeKind.Utc),
                             Email = "tesztelek@example.com",
@@ -1165,7 +1141,6 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 12L,
-                            Active = true,
                             BirthDate = new DateTime(1999, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreationDate = new DateTime(2023, 1, 19, 15, 25, 0, 0, DateTimeKind.Utc),
                             Email = "gitaron@example.com",

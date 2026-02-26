@@ -12,14 +12,17 @@ namespace GymTracer.Auth
     public class AuthHandler : AuthenticationHandler<AuthOptions>
     {
         private readonly GymTracerDbContext dbContext;
+        private readonly TokenHandler tokenHandler;
 
         public AuthHandler(
             IOptionsMonitor<AuthOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
+            TokenHandler tokenHandler,
             GymTracerDbContext dbContext) : base(options, logger, encoder)
         {
             this.dbContext = dbContext;
+            this.tokenHandler = tokenHandler;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -28,14 +31,16 @@ namespace GymTracer.Auth
             if (authorizationHeader.Count == 0)
                 return await Task.FromResult(AuthenticateResult.NoResult());
 
-            var tokenString = authorizationHeader.ToString();
+            //Authorization: Bearer TOKEN----
+            var tokenString = authorizationHeader.ToString().Replace("Bearer ","").Trim();
 
             return await HandleToken(tokenString);
         }
 
         private async Task<AuthenticateResult> HandleToken(string tokenString)
         {
-            Token? sessionToken = dbContext.Set<Token>().Include(s => s.User).SingleOrDefault(s => s.TokenString == tokenString);
+            string tokenHash = tokenHandler.HashToken(tokenString);
+            Token? sessionToken = dbContext.Set<Token>().Include(s => s.User).SingleOrDefault(s => s.TokenString == tokenHash);
 
             if (sessionToken is null || sessionToken.RevokedAt.AddMinutes(Options.ExpirationInMinutes) <= DateTime.UtcNow)
                 return await Task.FromResult(AuthenticateResult.Fail("Authentication failed"));

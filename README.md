@@ -4,9 +4,9 @@ Backend végpontok
 
 ## 1. Regisztráció és Bejelentkezés
 
-- `POST` /api/user/registration
-- `POST` /api/user/login
-- `POST` /api/user/logout
+- `POST` /api/auth/registration
+- `POST` /api/auth/login
+- `POST` /api/auth/logout
 
 ## 2. Customer tevékenység
 
