@@ -1,4 +1,5 @@
-﻿using GymTracer.Context;
+﻿using GymTracer.Auth;
+using GymTracer.Context;
 using GymTracer.Exceptions;
 using GymTracer.Extensions;
 using GymTracer.models;
@@ -17,9 +18,11 @@ namespace GymTracer.Controllers
     public partial class UserController : ControllerBase
     {
         private GymTracerDbContext DbContext;
+        private readonly TokenHandler tokenHandler;
 
-        public UserController(GymTracerDbContext dbContext) {
+        public UserController(GymTracerDbContext dbContext, TokenHandler tokenHandler) {
             this.DbContext = dbContext;
+            this.tokenHandler = tokenHandler;
         }
 
         [HttpGet("{id}/profile")]
@@ -111,10 +114,11 @@ namespace GymTracer.Controllers
 
                     var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == userToDeactivate!.Id).ToList();
 
-                    var tokenOfUser = DbContext.Set<Token>().FirstOrDefault(t => t.UserId == id && t.RevokedAt > DateTime.Now);
+                    var tokensOfUser = DbContext.Set<Token>().Where(t => t.UserId == id && t.RevokedAt > tokenHandler.Now()).ToList();
 
                     if (userToDeactivate != null && userToDeactivate.Active != false)
                     {
+                        var transaction = DbContext.Database.BeginTransaction();
                         userToDeactivate.Active = false;
                         DbContext.Update(userToDeactivate);
                         DbContext.SaveChanges();
@@ -123,15 +127,22 @@ namespace GymTracer.Controllers
                         {
                             foreach (var c in cardsOfUser)
                             {
-                                c.RevokedAt = DateTime.Now;
+                                c.RevokedAt = tokenHandler.Now();
                                 DbContext.Update(c);
                                 DbContext.SaveChanges();
                             }
                         }
-                        
-                        tokenOfUser!.RevokedAt = DateTime.Now;
-                        DbContext.Update(tokenOfUser);
-                        DbContext.SaveChanges();
+
+                        if (tokensOfUser.Count != 0)
+                        {
+                            foreach (var t in tokensOfUser)
+                            {
+                                t.RevokedAt = tokenHandler.Now();
+                                DbContext.Update(t);
+                                DbContext.SaveChanges();
+                            }
+                        }
+                        transaction.Commit();
 
                         return StatusCode(204);
                     }
