@@ -24,6 +24,44 @@ namespace GymTracer.Controllers
             this.tokenHandler = tokenHandler;
         }
 
+        [HttpGet("user/{id}")]
+        public IActionResult GetTrainingsByTrainer(long id)
+        {
+            return this.Run(() =>
+            {
+                string? userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                string? userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if(userId is null || userRole is null)
+                    return BadRequest("Hibás token!");
+
+                if(userId != id.ToString())
+                {
+                    if(userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
+                        return BadRequest("Csak saját nevedben kérheted le az edzéseket!");
+                    User? selectedUser = dbContext.Users.FirstOrDefault(u => u.Id == id);
+                    if(selectedUser is null)
+                        return BadRequest("Nincs ilyen felhasználó!");
+                }
+                List<Training> trainings = dbContext.Trainings.Include(t => t.Trainer).Where(t => t.TrainerId == id).OrderByDescending(t=> t.EndTime).ToList();
+                return Ok(trainings.Select(t => new
+                {
+                    t.Id,
+                    t.Name,
+                    t.Description,
+                    t.Image,
+                    t.StartTime,
+                    t.EndTime,
+                    t.MaxParticipant,
+                    t.TrainerId,
+                    trainer = new
+                    {
+                        t.Trainer.Id,
+                        t.Trainer.Name
+                    }
+                }));
+            });
+        }
+
         [HttpPost("user/{id}")]
         public IActionResult CreateTraining(long id, [FromBody] dynamic body)
         {
