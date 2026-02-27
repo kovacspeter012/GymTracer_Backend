@@ -12,14 +12,17 @@ namespace GymTracer.Auth
     public class AuthHandler : AuthenticationHandler<AuthOptions>
     {
         private readonly GymTracerDbContext dbContext;
+        private readonly TokenHandler tokenHandler;
 
         public AuthHandler(
             IOptionsMonitor<AuthOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
+            TokenHandler tokenHandler,
             GymTracerDbContext dbContext) : base(options, logger, encoder)
         {
             this.dbContext = dbContext;
+            this.tokenHandler = tokenHandler;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -38,10 +41,10 @@ namespace GymTracer.Auth
         {
             Token? sessionToken = dbContext.Set<Token>().Include(s => s.User).SingleOrDefault(s => s.TokenString == tokenString);
 
-            if (sessionToken is null || sessionToken.RevokedAt.AddMinutes(Options.ExpirationInMinutes) <= DateTime.UtcNow)
+            if (sessionToken is null || sessionToken.RevokedAt <= tokenHandler.Now())
                 return await Task.FromResult(AuthenticateResult.Fail("Authentication failed"));
 
-            sessionToken.RevokedAt = DateTime.UtcNow.AddMinutes(Options.ExpirationInMinutes);
+            sessionToken.RevokedAt = tokenHandler.Now().AddMinutes(Options.ExpirationInMinutes);
             dbContext.Update(sessionToken);
             dbContext.SaveChanges();
 

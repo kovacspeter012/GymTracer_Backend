@@ -118,7 +118,7 @@ namespace GymTracer.Controllers
 
                     if (userToDeactivate != null && userToDeactivate.Active != false)
                     {
-                        var transaction = DbContext.Database.BeginTransaction();
+                        using var transaction = DbContext.Database.BeginTransaction();
                         userToDeactivate.Active = false;
                         DbContext.Update(userToDeactivate);
                         DbContext.SaveChanges();
@@ -158,6 +158,40 @@ namespace GymTracer.Controllers
 
             });
             
+        }
+
+        [HttpGet("{id}/card")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult GetUsersCard(int id)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+
+                    var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == user!.Id && c.RevokedAt == null).ToList();
+
+                    if (cardsOfUser.Count != 0)
+                    {
+                        return StatusCode(200, cardsOfUser.Select(c => new
+                        {
+                            c.Id,
+                            c.Code
+                        }));
+                    }
+                    else
+                    {
+                        throw new ApiException(404, "No card found for this user");
+                    }
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+
+            });
+
         }
 
         [NonAction]
