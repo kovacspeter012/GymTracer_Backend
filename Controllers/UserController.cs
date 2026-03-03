@@ -228,6 +228,39 @@ namespace GymTracer.Controllers
 
         }
 
+        [HttpDelete("{id}/card/{card_id}")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult DeleteCard(int id, int card_id)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    var cardToDeactivate = DbContext.Set<Card>().FirstOrDefault(c => c.Id == card_id && c.RevokedAt == null);
+
+                    if (cardToDeactivate != null)
+                    {
+                        cardToDeactivate.RevokedAt = tokenHandler.Now();
+
+                        DbContext.Update(cardToDeactivate);
+                        DbContext.SaveChanges();
+
+                        return StatusCode(204);
+                    }
+                    else
+                    {
+                        throw new ApiException(404, "No card found");
+                    }
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+
+            });
+
+        }
+
         [NonAction]
         public bool IsAuthorized(int id)
         {
