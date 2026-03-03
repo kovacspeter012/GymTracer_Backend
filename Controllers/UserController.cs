@@ -112,7 +112,7 @@ namespace GymTracer.Controllers
                 {
                     var userToDeactivate = DbContext.Set<User>().SingleOrDefault(g => g.Id == id);
 
-                    var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == userToDeactivate!.Id).ToList();
+                    var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == userToDeactivate!.Id && c.RevokedAt == null).ToList();
 
                     var tokensOfUser = DbContext.Set<Token>().Where(t => t.UserId == id && t.RevokedAt > tokenHandler.Now()).ToList();
 
@@ -184,6 +184,40 @@ namespace GymTracer.Controllers
                     {
                         throw new ApiException(404, "No card found for this user");
                     }
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+
+            });
+
+        }
+
+        [HttpPost("{id}/card")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult PostNewCard(int id)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    Card newCard = new Card();
+                    newCard.UserId = id;
+                    newCard.CreatedAt = tokenHandler.Now();
+                    newCard.Code = Guid.NewGuid();
+
+
+                    DbContext.Update(newCard);
+                    DbContext.SaveChanges();
+
+                    var card = DbContext.Set<Card>().Where(c => c.Code == newCard.Code);
+                    return StatusCode(200, card.Select(c => new
+                    {
+                        c.Id,
+                        c.Code
+                    }));
+                    
                 }
                 else
                 {
