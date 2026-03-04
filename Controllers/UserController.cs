@@ -17,7 +17,7 @@ namespace GymTracer.Controllers
     [ApiController]
     public partial class UserController : ControllerBase
     {
-        private GymTracerDbContext DbContext;
+        private readonly GymTracerDbContext DbContext;
         private readonly TokenHandler tokenHandler;
 
         public UserController(GymTracerDbContext dbContext, TokenHandler tokenHandler) {
