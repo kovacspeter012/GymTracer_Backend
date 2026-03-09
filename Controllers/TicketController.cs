@@ -16,10 +16,12 @@ namespace GymTracer.Controllers
     public class TicketController : ControllerBase
     {
         private readonly GymTracerDbContext DbContext;
+        private readonly TokenHandler tokenHandler;
 
-        public TicketController(GymTracerDbContext dbContext)
+        public TicketController(GymTracerDbContext dbContext, TokenHandler tokenHandler)
         {
             this.DbContext = dbContext;
+            this.tokenHandler = tokenHandler;
         }
 
         [HttpGet]
@@ -70,6 +72,112 @@ namespace GymTracer.Controllers
                 }
             });
         }
+
+        [HttpPost("{ticket_id}/user/{id}/{is_paid}")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult Post(int id, int ticket_id, bool is_paid)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    using var transaction = DbContext.Database.BeginTransaction();
+                    var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                    var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+
+                    var ticket = DbContext.Set<Ticket>().FirstOrDefault(t => t.Id == ticket_id);
+
+                    var maxId = DbContext.Set<Payment>().Max(p => p.Id);
+                    var nextRecipeNum = int.Parse(DbContext.Set<Payment>().Where(p => p.Id == maxId).Single().ReceiptNumber.Split("-")[1]) + 1;
+
+                    if (ticket == null)
+                    {
+                        throw new ApiException(400, "No ticket found");
+                    }
+
+                    Payment newPayment = new Payment();
+
+                    if (is_paid)
+                    {
+                        
+                        newPayment = new Payment()
+                        {
+                            IssuerId = int.Parse(loggedInUserId!),
+                            DueDate = tokenHandler.Now(),
+                            PaymentDate = tokenHandler.Now(),
+                            TotalPrice = ticket.Price,
+                            ReceiptNumber = "REC-" + nextRecipeNum.ToString()
+                        };
+                    }
+                    else
+                    {
+                        newPayment = new Payment()
+                        {
+                            IssuerId = int.Parse(loggedInUserId!),
+                            DueDate = tokenHandler.Now().AddDays(7),
+                            PaymentDate = null,
+                            TotalPrice = ticket.Price,
+                            ReceiptNumber = "REC-" + nextRecipeNum.ToString()
+                        };
+                    }
+                    
+                    DbContext.Set<Payment>().Add(newPayment);
+                    DbContext.SaveChanges();
+
+                    var payment = DbContext.Set<Payment>().Where(p => p.ReceiptNumber == "REC-" +  nextRecipeNum.ToString()).Single();
+
+                    DateTime expirationDate = tokenHandler.Now();
+
+                    switch (ticket.Type)
+                    {
+                        case Ticket_Type.training:
+                            expirationDate = expirationDate.AddYears(1);
+                            break;
+                        case Ticket_Type.daily:
+                            expirationDate = expirationDate.AddDays(1);
+                            break;
+                        case Ticket_Type.monthly:
+                            expirationDate = expirationDate.AddMonths(1);
+                            break;
+                        case Ticket_Type.x_usage:
+                            expirationDate = expirationDate.AddYears(1);
+                            break;
+
+                    }
+
+                    UserTicket newUserTicket = new UserTicket()
+                    {
+                        UserId = user!.Id,
+                        TicketId = ticket_id,
+                        PaymentId = payment.Id,
+                        CreationDate = tokenHandler.Now(),
+                        ExpirationDate = expirationDate,
+                        UsageAmount = 0,
+                    };
+
+                    DbContext.Set<UserTicket>().Add(newUserTicket);
+                    DbContext.SaveChanges();
+
+                    transaction.Commit();
+
+                    return StatusCode(201, new
+                    {
+                        id = payment.Id,
+                        issuerId = payment.IssuerId,
+                        dueDate = payment.DueDate,
+                        paymentDate = payment.PaymentDate,
+                        totalPrice = payment.TotalPrice,
+                        receiptNumber = payment.ReceiptNumber,
+                    });
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+            });
+        }
+
 
         [NonAction]
         public bool IsAuthorized(int id)
