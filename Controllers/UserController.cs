@@ -79,9 +79,16 @@ namespace GymTracer.Controllers
                     if (!EmailRegex().Match(userToModifyWith.Email).Success)
                         return BadRequest(new { error = "Az email címnek validnak kell lennie" });
 
-                    var isUsedEmail = DbContext.Users.Any(u => u.Email == userToModifyWith.Email);
-                    if (isUsedEmail)
-                        return BadRequest(new { error = "Az email cím már használatban van" });
+                    var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                    var loggedInUser = DbContext.Set<User>().FirstOrDefault(u => u.Id.ToString() == loggedInUserId);
+
+                    if (userToModifyWith.Email != loggedInUser!.Email)
+                    {
+                        var isUsedEmail = DbContext.Users.Any(u => u.Email == userToModifyWith.Email);
+                        if (isUsedEmail)
+                            return BadRequest(new { error = "Az email cím már használatban van" });
+                    }
 
                     if (userToModify != null)
                     {

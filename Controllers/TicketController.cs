@@ -73,9 +73,43 @@ namespace GymTracer.Controllers
             });
         }
 
+        [HttpGet("user/{id}/unpaid")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult GetUnpaidTIcketsOfAUser(int id)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    var unpaidUserTickets = DbContext.Set<UserTicket>().Where(u => u.UserId == id).Include(u => u.Ticket).Include(u => u.Payment).Where(u => u.Payment.PaymentDate == null && u.Payment.DueDate > tokenHandler.Now());
+
+                    if (unpaidUserTickets != null)
+                    {
+                        return StatusCode(200, unpaidUserTickets.Select(ut => new
+                        {
+                            ut.Ticket.Type,
+                            ut.Ticket.Description,
+                            ut.Ticket.IsStudent,
+                            ut.ExpirationDate,
+                            price = ut.Payment.TotalPrice,
+                            usagesLeft = ut.UsageAmount
+                        }));
+                    }
+                    else
+                    {
+                        throw new ApiException(404, "No card found");
+                    }
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+            });
+        }
+
         [HttpPost("{ticket_id}/user/{id}/{is_paid}")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
-        public IActionResult Post(int id, int ticket_id, bool is_paid)
+        public IActionResult PostTicketAndPayment(int id, int ticket_id, bool is_paid)
         {
             return this.Run(() =>
             {
@@ -178,7 +212,7 @@ namespace GymTracer.Controllers
             });
         }
 
-
+        
         [NonAction]
         public bool IsAuthorized(int id)
         {
