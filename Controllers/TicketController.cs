@@ -228,6 +228,7 @@ namespace GymTracer.Controllers
                         throw new ApiException(400, "No payment found");
                     }
 
+
                     return StatusCode(201, new
                     {
                         id = paymentToBePayed.Id,
