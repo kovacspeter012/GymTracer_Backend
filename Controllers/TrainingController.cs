@@ -210,7 +210,7 @@ namespace GymTracer.Controllers
                 if (userId != dbTraining.TrainerId.ToString())
                 {
                     if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
-                        return BadRequest("Csak saját nevében törölheted az edzést!");
+                        return BadRequest("Csak saját nevében törölheti az edzést!");
                 }
 
                 dbTraining.Active = false;
