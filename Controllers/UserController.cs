@@ -268,6 +268,61 @@ namespace GymTracer.Controllers
 
         }
 
+        [HttpGet("{id}/training")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult GetTrainingsOfUser(int id, [FromQuery] bool arePreviousNeeded)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    var trainingsOfUser = DbContext.Set<TrainingUser>().Include(tu => tu.Training).Include(tu =>tu.Training.Trainer).Where(tu => tu.UserId == id);
+                    if (arePreviousNeeded)
+                    {
+                        return StatusCode(200, trainingsOfUser.Select(tu => new
+                        {
+                            tu.Training.Name,
+                            tu.Training.Image,
+                            tu.Training.Description,
+                            tu.Training.StartTime,
+                            tu.Training.EndTime,
+                            tu.Training.MaxParticipant,
+                            tu.Training.Active,
+                            TrainerName = tu.Training.Trainer.Name,
+                            TrainerEmail = tu.Training.Trainer.Email,
+                            tu.ApplicationDate,
+                            tu.OnWaitinglist,
+                            tu.Presence,
+                        }));
+                    }
+                    else
+                    {
+                        return StatusCode(200, trainingsOfUser.Where(tu => tu.Training.EndTime > tokenHandler.Now()).Select(tu => new
+                        {
+                            tu.Training.Name,
+                            tu.Training.Image,
+                            tu.Training.Description,
+                            tu.Training.StartTime,
+                            tu.Training.EndTime,
+                            tu.Training.MaxParticipant,
+                            tu.Training.Active,
+                            TrainerName = tu.Training.Trainer.Name,
+                            TrainerEmail = tu.Training.Trainer.Email,
+                            tu.ApplicationDate,
+                            tu.OnWaitinglist,
+                            tu.Presence,
+                        }));
+                    }
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+
+            });
+
+        }
+
         [NonAction]
         public bool IsAuthorized(int id)
         {

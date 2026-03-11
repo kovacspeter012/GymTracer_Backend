@@ -23,7 +23,7 @@ Backend végpontok
 - `GET` /api/ticket/user/{id}
 - `GET` /api/tickets/user/{id}/unpaid
 - `POST` /api/ticket/{ticket_id}/user/{id}/{is_paid}
-- `POST` /api/ticket/{ticket_id}/user/{id}/pay
+- `POST` /api/ticket/user/{id}/pay/{payment_id}
 
 - `GET` /api/training
 - `GET` /api/training/{training_id}
