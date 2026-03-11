@@ -33,8 +33,8 @@ Backend végpontok
 
 - `GET` /api/training/user/{id}
 - `POST` /api/training/user/{id}
-- `PUT` /api/training/{training_id}/user/{id}
-- `DELETE` /api/training/{training_id}/user/{id}
+- `PUT` /api/training/{training_id}
+- `DELETE` /api/training/{training_id}
 - `PUT` /api/training/{training_id}/user/{id}/attendance
 
 ## 4. Staff

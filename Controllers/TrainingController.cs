@@ -122,6 +122,72 @@ namespace GymTracer.Controllers
             });
         }
 
+        [HttpPut("{training_id}")]
+        public IActionResult UpdateTraining([FromRoute] long training_id, [FromBody] dynamic body)
+        {
+            return this.Run(() =>
+            {
+                Training training = Training.Deserialize(body);
+
+                string? userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                string? userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userId is null || userRole is null)
+                    return BadRequest("Hibás token!");
+
+                Training? dbTraining = dbContext.Trainings.FirstOrDefault(t => t.Id == training_id);
+
+                if (dbTraining is null)
+                    return BadRequest("Nincs ilyen edzés!");
+
+                // Ellenőrzi: dbTraining.TrainerId == userId
+                if (ProblemWithValidatingTraining(training, false, dbTraining.TrainerId, userId, training_id, userRole) is string problem)
+                    return BadRequest(problem);
+
+                if (training.TrainerId == 0)
+                {
+                    training.TrainerId = dbTraining.TrainerId;
+                }
+
+                if(dbTraining.TrainerId != training.TrainerId)
+                {
+                    if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff)) 
+                        return BadRequest("Az edzést nem adhatja át másnak.");
+                }
+
+                dbTraining.Name = training.Name;
+                dbTraining.Description = training.Description;
+                dbTraining.Image = training.Image;
+                dbTraining.StartTime = training.StartTime;
+                dbTraining.EndTime = training.EndTime;
+                dbTraining.MaxParticipant = training.MaxParticipant;
+                dbTraining.TrainerId = training.TrainerId;
+                dbTraining.Active = training.Active;
+
+                dbContext.SaveChanges();
+                return Ok(new
+                {
+                    message = "Az edzés sikeresen módosítva lett!",
+                    training = new
+                    {
+                        dbTraining.Id,
+                        dbTraining.Name,
+                        dbTraining.Description,
+                        dbTraining.Image,
+                        dbTraining.StartTime,
+                        dbTraining.EndTime,
+                        dbTraining.MaxParticipant,
+
+                        dbTraining.TrainerId,
+                        trainer = new
+                        {
+                            dbTraining.Trainer.Id,
+                            dbTraining.Trainer.Name
+                        }
+                    }
+                });
+            });
+        }
+
         [NonAction]
         public string? ProblemWithValidatingTraining(Training training, bool isCreate, long id, string userId, long trainingId, string userRole)
         {
