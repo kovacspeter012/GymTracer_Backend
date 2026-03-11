@@ -20,22 +20,24 @@ Backend végpontok
 
 
 - `GET` /api/ticket
-- `GET` /api/user/{id}/ticket
-- `POST` /api/user/{id}/ticket/{ticket_id}/{is_paid}
+- `GET` /api/ticket/user/{id}
+- `GET` /api/tickets/user/{id}/unpaid
+- `POST` /api/ticket/{ticket_id}/user/{id}/{is_paid}
+- `POST` /api/ticket/{ticket_id}/user/{id}/pay
 
 - `GET` /api/training
+- `GET` /api/training/{training_id}
 - `GET` /api/user/{id}/training
 - `POST` /api/user/{id}/training/{training_id}
 - `DELETE` /api/user/{id}/training/{training_id}
 
 ## 3. Trainer tevékenység
 
-- `GET` /api/training
 - `GET` /api/training/user/{id}
-- `POST` /api/training/users/{id}
-- `PUT` /api/training/{training_id}/users/{id}
-- `DELETE` /api/training/{training_id}/users/{id}
-- `PUT` /api/training/{training_id}/users/{id}/attendance
+- `POST` /api/training/user/{id}
+- `PUT` /api/training/{training_id}/user/{id}
+- `DELETE` /api/training/{training_id}/user/{id}
+- `PUT` /api/training/{training_id}/user/{id}/attendance
 
 ## 4. Staff
 

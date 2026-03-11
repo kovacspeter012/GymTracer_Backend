@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace GymTracer.Auth
 {
@@ -11,10 +10,9 @@ namespace GymTracer.Auth
         {
             this.authSettings = authOptions.Value;
         }
-        public void GenerateTokenData(out string tokenString, out string tokenHash, out DateTime createdAt, out DateTime revokedAt)
+        public void GenerateTokenData(out string tokenString, out DateTime createdAt, out DateTime revokedAt)
         {
             tokenString = GenerateTokenString();
-            tokenHash = HashToken(tokenString);
             createdAt = DateTime.UtcNow;
             revokedAt = DateTime.UtcNow.AddMinutes(authSettings.ExpirationInMinutes);
         }
@@ -22,11 +20,6 @@ namespace GymTracer.Auth
         public DateTime Now()
         {
             return DateTime.UtcNow;
-        }
-        public string HashToken(string tokenString)
-        {
-            byte[] hashedData = SHA256.HashData(Encoding.UTF8.GetBytes(tokenString));
-            return Convert.ToBase64String(hashedData);
         }
 
         private string GenerateTokenString()
