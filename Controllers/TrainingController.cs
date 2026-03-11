@@ -223,6 +223,50 @@ namespace GymTracer.Controllers
             });
         }
 
+        [HttpPatch("{training_id}/user/{id}/presence")]
+        public IActionResult SetTrainingPresence([FromRoute] long training_id, [FromRoute] long id, [FromBody] dynamic body)
+        {
+            return this.Run(() =>
+            {
+                string? userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                string? userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userId is null || userRole is null)
+                    return BadRequest("Hibás token!");
+
+                Training? dbTraining = 
+                    dbContext.Trainings.Include(t => t.TrainingUsers)
+                                       .FirstOrDefault(t => t.Id == training_id && t.Active);
+
+                if (dbTraining is null)
+                    return BadRequest("Nincs ilyen edzés!");
+
+                bool? presence = body.presence;
+
+                if(presence is null)
+                    return BadRequest("A részvétel megadása kötelező!");
+
+                if (userId != dbTraining.TrainerId.ToString())
+                {
+                    if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
+                        return BadRequest("Csak saját edzéséhez állíthatja az emberek jelenlétét!");
+                }
+
+                TrainingUser? dbTrainingUser = dbTraining.TrainingUsers.FirstOrDefault(t => t.UserId == id);
+                if (dbTrainingUser is null) 
+                    return BadRequest("Ez a felhasználó nincs regisztrálva erre az edzésre!");
+
+                dbTrainingUser.Presence = presence.Value;
+                dbContext.SaveChanges();
+
+                return Ok(new{ 
+                    Message = "A részvétel sikeresen módosítva lett!",
+                    dbTrainingUser.TrainingId,
+                    dbTrainingUser.UserId,
+                    dbTrainingUser.Presence
+                });
+            });
+        }
+
         [NonAction]
         public string? ProblemWithValidatingTraining(Training training, bool isCreate, long id, string userId, long trainingId, string userRole)
         {
