@@ -74,40 +74,8 @@ namespace GymTracer.Controllers
                 if(userId is null || userRole is null)
                     return BadRequest("Hibás token!");
 
-                if(userId != id.ToString())
-                {
-                    if(userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
-                        return BadRequest("Csak saját nevében hozhat létre edzést!");
-
-                    User? selectedUser = dbContext.Users.FirstOrDefault(u => u.Id == id);
-                    if(selectedUser is null)
-                        return BadRequest("Nincs ilyen felhasználó!");
-                }
-
-                TimeSpan trainingTimeSpan = training.EndTime - training.StartTime;
-                if(training.StartTime < tokenHandler.Now() || training.EndTime < tokenHandler.Now())
-                    return BadRequest("Az edzés időpontja érvénytelen!");
-
-                if(trainingTimeSpan.TotalMinutes < 5)
-                    return BadRequest("Az edzés időtartama legalább 5 perc kell legyen!");
-                else if(trainingTimeSpan.TotalHours > 2)
-                    return BadRequest("Az edzés időtartama legfeljebb 2 óra lehet!");
-
-                if(string.IsNullOrEmpty(training.Name) || training.Name.Trim() == "")
-                    return BadRequest("Az edzésnek valid névvel kell rendelkeznie!");
-
-                if(string.IsNullOrEmpty(training.Description) || training.Description.Trim() == "")
-                    return BadRequest("Az edzésnek valid leírással kell rendelkeznie!");
-
-                // TODO: Feltöltött kép validáció
-                if(string.IsNullOrEmpty(training.Image) || training.Image.Trim() == "")
-                    return BadRequest("Az edzésnek valid képpel kell rendelkeznie!");
-
-                if(training.MaxParticipant == 0)
-                    return BadRequest("Az edzésnek legalább 1 résztvevővel kell rendelkeznie!");
-
-                if(dbContext.Trainings.Any(t => t.StartTime < training.EndTime && training.StartTime < t.EndTime))
-                    return BadRequest("Ebben az időintervallumban már van regisztrált edzés!");
+                if(ProblemWithValidatingTraining(training, true, id, userId, userRole) is string problem)
+                    return BadRequest(problem);
 
                 Training createdTraining = new Training()
                 {
@@ -151,6 +119,49 @@ namespace GymTracer.Controllers
                     }
                 });
             });
+        }
+
+        [NonAction]
+        public string? ProblemWithValidatingTraining(Training training, bool isCreate, long id, string userId, string userRole)
+        {
+            string apiActionText = isCreate ? "hozhat létre" : "módosíthat";
+
+            if (userId != id.ToString())
+            {
+                if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
+                    return $"Csak saját nevében {isCreate} edzést!";
+
+                User? selectedUser = dbContext.Users.FirstOrDefault(u => u.Id == id);
+                if (selectedUser is null)
+                    return "Nincs ilyen felhasználó!";
+            }
+
+            TimeSpan trainingTimeSpan = training.EndTime - training.StartTime;
+            if (training.StartTime < tokenHandler.Now() || training.EndTime < tokenHandler.Now())
+                return "Az edzés időpontja érvénytelen!";
+
+            if (trainingTimeSpan.TotalMinutes < 5)
+                return "Az edzés időtartama legalább 5 perc kell legyen!";
+            else if (trainingTimeSpan.TotalHours > 2)
+                return "Az edzés időtartama legfeljebb 2 óra lehet!";
+
+            if (string.IsNullOrEmpty(training.Name) || training.Name.Trim() == "")
+                return "Az edzésnek valid névvel kell rendelkeznie!";
+
+            if (string.IsNullOrEmpty(training.Description) || training.Description.Trim() == "")
+                return "Az edzésnek valid leírással kell rendelkeznie!";
+
+            // TODO: Feltöltött kép validáció
+            if (string.IsNullOrEmpty(training.Image) || training.Image.Trim() == "")
+                return "Az edzésnek valid képpel kell rendelkeznie!";
+
+            if (training.MaxParticipant == 0)
+                return "Az edzésnek legalább 1 résztvevővel kell rendelkeznie!";
+
+            if (dbContext.Trainings.Any(t => t.StartTime < training.EndTime && training.StartTime < t.EndTime && t.Id != training.Id))
+                return "Ebben az időintervallumban már van regisztrált edzés!";
+
+            return null;
         }
     }
 }
