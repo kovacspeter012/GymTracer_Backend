@@ -87,6 +87,7 @@ namespace GymTracer.Controllers
                     {
                         return StatusCode(200, unpaidUserTickets.Select(ut => new
                         {
+                            paymentId = ut.PaymentId,
                             ut.Ticket.Type,
                             ut.Ticket.Description,
                             ut.Ticket.IsStudent,
@@ -212,7 +213,41 @@ namespace GymTracer.Controllers
             });
         }
 
-        
+        [HttpPatch("/user/{id}/pay/{payment_id}")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult PatchPayment(int id, int payment_id)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    var paymentToBePayed = DbContext.Set<Payment>().Where(p => p.Id == payment_id).Single();
+
+                    if (paymentToBePayed == null)
+                    {
+                        throw new ApiException(400, "No payment found");
+                    }
+
+                    return StatusCode(201, new
+                    {
+                        id = paymentToBePayed.Id,
+                        issuerId = paymentToBePayed.IssuerId,
+                        dueDate = paymentToBePayed.DueDate,
+                        paymentDate = paymentToBePayed.PaymentDate,
+                        totalPrice = paymentToBePayed.TotalPrice,
+                        receiptNumber = paymentToBePayed.ReceiptNumber,
+                    });
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+            });
+        }
+
+
+
+
         [NonAction]
         public bool IsAuthorized(int id)
         {
