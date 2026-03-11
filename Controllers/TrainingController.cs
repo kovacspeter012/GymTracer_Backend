@@ -74,7 +74,8 @@ namespace GymTracer.Controllers
                 if(userId is null || userRole is null)
                     return BadRequest("Hibás token!");
 
-                if(ProblemWithValidatingTraining(training, true, id, userId, userRole) is string problem)
+                // trainingId 0, mert új, és még nincs id-je
+                if(ProblemWithValidatingTraining(training, true, id, userId, 0, userRole) is string problem)
                     return BadRequest(problem);
 
                 Training createdTraining = new Training()
@@ -122,14 +123,14 @@ namespace GymTracer.Controllers
         }
 
         [NonAction]
-        public string? ProblemWithValidatingTraining(Training training, bool isCreate, long id, string userId, string userRole)
+        public string? ProblemWithValidatingTraining(Training training, bool isCreate, long id, string userId, long trainingId, string userRole)
         {
             string apiActionText = isCreate ? "hozhat létre" : "módosíthat";
 
             if (userId != id.ToString())
             {
                 if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
-                    return $"Csak saját nevében {isCreate} edzést!";
+                    return $"Csak saját nevében {apiActionText} edzést!";
 
                 User? selectedUser = dbContext.Users.FirstOrDefault(u => u.Id == id);
                 if (selectedUser is null)
@@ -158,7 +159,7 @@ namespace GymTracer.Controllers
             if (training.MaxParticipant == 0)
                 return "Az edzésnek legalább 1 résztvevővel kell rendelkeznie!";
 
-            if (dbContext.Trainings.Any(t => t.StartTime < training.EndTime && training.StartTime < t.EndTime && t.Id != training.Id))
+            if (dbContext.Trainings.Any(t => t.StartTime < training.EndTime && training.StartTime < t.EndTime && t.Id != trainingId))
                 return "Ebben az időintervallumban már van regisztrált edzés!";
 
             return null;
