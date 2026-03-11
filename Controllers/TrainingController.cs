@@ -42,7 +42,12 @@ namespace GymTracer.Controllers
                     if(selectedUser is null)
                         return BadRequest("Nincs ilyen felhasználó!");
                 }
-                List<Training> trainings = dbContext.Trainings.Include(t => t.Trainer).Where(t => t.TrainerId == id).OrderByDescending(t=> t.EndTime).ToList();
+                List<Training> trainings = 
+                    dbContext.Trainings.Include(t => t.Trainer)
+                                       .Where(t => t.TrainerId == id && t.Active)
+                                       .OrderByDescending(t=> t.EndTime)
+                                       .ToList();
+
                 return Ok(trainings.Select(t => new
                 {
                     t.Id,
@@ -134,7 +139,7 @@ namespace GymTracer.Controllers
                 if (userId is null || userRole is null)
                     return BadRequest("Hibás token!");
 
-                Training? dbTraining = dbContext.Trainings.FirstOrDefault(t => t.Id == training_id);
+                Training? dbTraining = dbContext.Trainings.FirstOrDefault(t => t.Id == training_id && t.Active);
 
                 if (dbTraining is null)
                     return BadRequest("Nincs ilyen edzés!");
@@ -161,7 +166,6 @@ namespace GymTracer.Controllers
                 dbTraining.EndTime = training.EndTime;
                 dbTraining.MaxParticipant = training.MaxParticipant;
                 dbTraining.TrainerId = training.TrainerId;
-                dbTraining.Active = training.Active;
 
                 dbContext.SaveChanges();
                 return Ok(new
@@ -225,7 +229,7 @@ namespace GymTracer.Controllers
             if (training.MaxParticipant == 0)
                 return "Az edzésnek legalább 1 résztvevővel kell rendelkeznie!";
 
-            if (dbContext.Trainings.Any(t => t.StartTime < training.EndTime && training.StartTime < t.EndTime && t.Id != trainingId))
+            if (dbContext.Trainings.Any(t => t.Active && t.StartTime < training.EndTime && training.StartTime < t.EndTime && t.Id != trainingId))
                 return "Ebben az időintervallumban már van regisztrált edzés!";
 
             return null;
