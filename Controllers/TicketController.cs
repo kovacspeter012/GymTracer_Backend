@@ -221,22 +221,29 @@ namespace GymTracer.Controllers
             {
                 if (IsAuthorized(id))
                 {
-                    var paymentToBePayed = DbContext.Set<Payment>().Where(p => p.Id == payment_id).Single();
+                    var paymentToBePayed = DbContext.Set<UserTicket>().Where(ut => ut.UserId == id && ut.PaymentId == payment_id).Include(ut => ut.Payment).Single();
 
                     if (paymentToBePayed == null)
                     {
                         throw new ApiException(400, "No payment found");
                     }
 
+                    if (paymentToBePayed.Payment.PaymentDate != null)
+                    {
+                        throw new ApiException(400, "Ticket already payed");
+                    }
+
+                    paymentToBePayed.Payment.PaymentDate = tokenHandler.Now();
+                    DbContext.SaveChanges();
 
                     return StatusCode(201, new
                     {
-                        id = paymentToBePayed.Id,
-                        issuerId = paymentToBePayed.IssuerId,
-                        dueDate = paymentToBePayed.DueDate,
-                        paymentDate = paymentToBePayed.PaymentDate,
-                        totalPrice = paymentToBePayed.TotalPrice,
-                        receiptNumber = paymentToBePayed.ReceiptNumber,
+                        id = paymentToBePayed.Payment.Id,
+                        issuerId = paymentToBePayed.Payment.IssuerId,
+                        dueDate = paymentToBePayed.Payment.DueDate,
+                        paymentDate = paymentToBePayed.Payment.PaymentDate,
+                        totalPrice = paymentToBePayed.Payment.TotalPrice,
+                        receiptNumber = paymentToBePayed.Payment.ReceiptNumber,
                     });
                 }
                 else
