@@ -192,6 +192,37 @@ namespace GymTracer.Controllers
             });
         }
 
+        [HttpDelete("{training_id}")]
+        public IActionResult DeleteTraining([FromRoute] long training_id)
+        {
+            return this.Run(() =>
+            {
+                string? userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                string? userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userId is null || userRole is null)
+                    return BadRequest("Hibás token!");
+
+                Training? dbTraining = dbContext.Trainings.FirstOrDefault(t => t.Id == training_id && t.Active);
+
+                if (dbTraining is null)
+                    return BadRequest("Nincs ilyen edzés!");
+
+                if (userId != dbTraining.TrainerId.ToString())
+                {
+                    if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
+                        return BadRequest("Csak saját nevében törölheted az edzést!");
+                }
+
+                dbTraining.Active = false;
+                dbContext.SaveChanges();
+
+                return Ok(new
+                {
+                    message = "Az edzés sikeresen törölve lett!"
+                });
+            });
+        }
+
         [NonAction]
         public string? ProblemWithValidatingTraining(Training training, bool isCreate, long id, string userId, long trainingId, string userRole)
         {
