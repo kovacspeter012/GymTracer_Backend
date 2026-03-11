@@ -83,7 +83,12 @@ namespace GymTracer.Controllers
                 if(ProblemWithValidatingTraining(training, true, id, userId, 0, userRole) is string problem)
                     return BadRequest(problem);
 
-                Training createdTraining = new Training()
+                User? dbTrainer = dbContext.Users.FirstOrDefault(u => u.Id == id);
+
+                if(dbTrainer is null)
+                    return BadRequest("Nincs ilyen felhasználó!");
+
+                Training dbTraining = new Training()
                 {
                     Name = training.Name,
                     Description = training.Description,
@@ -91,15 +96,12 @@ namespace GymTracer.Controllers
                     StartTime = training.StartTime,
                     EndTime = training.EndTime,
                     MaxParticipant = training.MaxParticipant,
-                    TrainerId = id,
+                    TrainerId = dbTrainer.Id,
                     Active = true,
                 };
 
-                dbContext.Trainings.Add(createdTraining);
+                dbContext.Trainings.Add(dbTraining);
                 dbContext.SaveChanges();
-                Training dbTraining = dbContext.Trainings.Include(t=>t.Trainer).First(t => t.Id == createdTraining.Id);
-
-
 
                 return Ok(new
                 {
@@ -119,8 +121,8 @@ namespace GymTracer.Controllers
 
                         trainer = new
                         {
-                            dbTraining.Trainer.Id,
-                            dbTraining.Trainer.Name
+                            dbTrainer.Id,
+                            dbTrainer.Name
                         }
                     }
                 });
