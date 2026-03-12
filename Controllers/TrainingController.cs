@@ -44,6 +44,8 @@ namespace GymTracer.Controllers
                 }
                 List<Training> trainings = 
                     dbContext.Trainings.Include(t => t.Trainer)
+                                       .Include(t => t.TrainingTickets)
+                                       .ThenInclude(tt => tt.Ticket)
                                        .Where(t => t.TrainerId == id && t.Active)
                                        .OrderByDescending(t=> t.EndTime)
                                        .ToList();
@@ -62,7 +64,23 @@ namespace GymTracer.Controllers
                     {
                         t.Trainer.Id,
                         t.Trainer.Name
+                    },
+                    TrainingTickets = t.TrainingTickets
+                        .Select(tt => new
+                        {
+                            Ticket = new
+                            {
+                                tt.Ticket.Id,
+
+                                tt.Ticket.Description,
+                                tt.Ticket.IsStudent,
+                                tt.Ticket.Type,
+                                tt.Ticket.Price,
+
+                                tt.Ticket.Tax_key,
+                                tt.Ticket.MaxUsage,
                     }
+                        })
                 }));
             });
         }
