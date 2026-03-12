@@ -79,7 +79,7 @@ namespace GymTracer.Controllers
 
                                 tt.Ticket.Tax_key,
                                 tt.Ticket.MaxUsage,
-                    }
+                            }
                         })
                 }));
             });
@@ -116,7 +116,33 @@ namespace GymTracer.Controllers
                     MaxParticipant = training.MaxParticipant,
                     TrainerId = dbTrainer.Id,
                     Active = true,
+                    TrainingTickets = []
                 };
+
+
+                // Training Ticketjeinek létrehozása (ha meg lettek adva)
+                foreach (TrainingTicket tt in training.TrainingTickets)
+                {
+                    if (tt.Ticket is null)
+                        continue;
+                    if (ProblemWithValidatingTicket(tt.Ticket) is string ticketProblem)
+                        return BadRequest(ticketProblem);
+
+                    dbTraining.TrainingTickets.Add(new TrainingTicket()
+                    {
+                        Training = dbTraining,
+                        Ticket = new Ticket()
+                        {
+                            Description = tt.Ticket.Description,
+                            IsStudent = tt.Ticket.IsStudent,
+                            Price = tt.Ticket.Price,
+                            Type = tt.Ticket.Type,
+
+                            MaxUsage = 1,
+                            Tax_key = 27,
+                        }
+                    });
+                }
 
                 dbContext.Trainings.Add(dbTraining);
                 dbContext.SaveChanges();
@@ -326,6 +352,16 @@ namespace GymTracer.Controllers
 
             if (dbContext.Trainings.Any(t => t.Active && t.StartTime < training.EndTime && training.StartTime < t.EndTime && t.Id != trainingId))
                 return "Ebben az időintervallumban már van regisztrált edzés!";
+
+            return null;
+        }
+
+        [NonAction]
+
+        public string? ProblemWithValidatingTicket(Ticket ticket)
+        {
+            if (string.IsNullOrEmpty(ticket.Description) || ticket.Description.Trim() == "")
+                return "A jegynek kell leírást adni";
 
             return null;
         }
