@@ -116,6 +116,7 @@ namespace GymTracer.Controllers
                     MaxParticipant = training.MaxParticipant,
                     TrainerId = dbTrainer.Id,
                     Active = true,
+                    TrainingTickets = []
                 };
 
                 dbContext.Trainings.Add(dbTraining);
