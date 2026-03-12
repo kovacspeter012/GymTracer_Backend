@@ -27,28 +27,32 @@ namespace GymTracer.Controllers
         [HttpGet]
         public IActionResult GetAllTickets()
         {
-            var tickets = DbContext.Set<Ticket>();
+            var tickets = DbContext.Set<Ticket>().Include(t => t.TrainingTickets);
 
-            return StatusCode(200, tickets.Select(t => new
+            var ticketsToBeReturned = tickets.Select(t => new
             {
                 t.Id,
                 t.Type,
                 t.Description,
                 t.IsStudent,
                 t.Price,
-                t.MaxUsage
-            }));
+                t.MaxUsage,
+                trainingId = t.TrainingTickets.FirstOrDefault(tt => tt.TicketId == t.Id) != null ? t.TrainingTickets.FirstOrDefault(tt => tt.TicketId == t.Id)!.TicketId : 0,
+                trainerName = t.TrainingTickets.FirstOrDefault(tt => tt.TicketId == t.Id) != null ? t.TrainingTickets.FirstOrDefault(tt => tt.TicketId == t.Id)!.Training.Name : ""
+            }).ToList();
+
+            return StatusCode(200, ticketsToBeReturned);
         }
 
         [HttpGet("user/{id}")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
-        public IActionResult GetTIcketsOfAUser(int id)
+        public IActionResult GetTicketsOfAUser(int id)
         {
             return this.Run(() =>
             {
                 if (IsAuthorized(id))
                 {
-                    var userTickets = DbContext.Set<UserTicket>().Where(u => u.UserId == id).Include(u => u.Ticket);
+                    var userTickets = DbContext.Set<UserTicket>().Where(u => u.UserId == id).Include(u => u.Ticket).Include(u => u.Ticket.TrainingTickets);
 
                     if (userTickets != null)
                     {
@@ -58,7 +62,9 @@ namespace GymTracer.Controllers
                             ut.Ticket.Description,
                             ut.Ticket.IsStudent,
                             ut.ExpirationDate,
-                            usagesLeft = ut.UsageAmount
+                            usagesLeft = ut.UsageAmount,
+                            trainingId = ut.Ticket.TrainingTickets.FirstOrDefault(tt => tt.TicketId == ut.Ticket.Id) != null ? ut.Ticket.TrainingTickets.FirstOrDefault(tt => tt.TicketId == ut.Ticket.Id)!.TicketId : 0,
+                            trainerName = ut.Ticket.TrainingTickets.FirstOrDefault(tt => tt.TicketId == ut.Ticket.Id) != null ? ut.Ticket.TrainingTickets.FirstOrDefault(tt => tt.TicketId == ut.Ticket.Id)!.Training.Name : ""
                         }));
                     }
                     else
