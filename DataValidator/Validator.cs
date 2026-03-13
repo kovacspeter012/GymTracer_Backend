@@ -25,8 +25,8 @@ namespace GymTracer.DataValidator
             string? displayName = null,
             [CallerArgumentExpression(nameof(callback))] string expression = "")
         {
-            int lastDot = expression.IndexOf('.');
-            string fieldName = lastDot == -1 ? expression : expression[(lastDot + 1)..];
+            int firstDot = expression.IndexOf('.');
+            string fieldName = firstDot == -1 ? expression : expression[(firstDot + 1)..];
 
             TProp fieldValue = callback(validationModel);
             return new ValidatorChain<TProp>(fieldValue, fieldName, Errors, displayName);
