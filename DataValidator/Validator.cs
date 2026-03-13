@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace GymTracer.DataValidator
 {
@@ -20,14 +21,15 @@ namespace GymTracer.DataValidator
             this.validationModel = validatonTarget;
         }
 
-        public ValidatorChain<TProp> Validate<TProp>(Expression<Func<T, TProp>> expression)
+        public ValidatorChain<TProp> Validate<TProp>(
+            Func<T, TProp> callback,
+            [CallerArgumentExpression(nameof(callback))] string expression = "")
         {
-            var compiledFunction = expression.Compile();
-            var validationField = compiledFunction(validationModel);
+            int lastDot = expression.LastIndexOf('.');
+            string fieldName = lastDot == -1 ? expression : expression[(lastDot + 1)..];
 
-            var validationFieldName = ((MemberExpression)expression.Body).Member.Name;
-
-            return new ValidatorChain<TProp>(validationField, validationFieldName, Errors);
+            TProp fieldValue = callback(validationModel);
+            return new ValidatorChain<TProp>(fieldValue, fieldName, Errors);
         }
     }
 }
