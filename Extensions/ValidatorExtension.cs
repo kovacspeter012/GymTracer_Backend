@@ -1,4 +1,5 @@
 ﻿using GymTracer.DataValidator;
+using System.Collections;
 using System.Numerics;
 using System.Text.RegularExpressions;
 
@@ -91,19 +92,19 @@ namespace GymTracer.Extensions
         }
         #endregion
         #region COLLECTION
-        public static ValidatorChain<TCollection> NotEmpty<TCollection, TItem>(this ValidatorChain<TCollection> chain) where TCollection : ICollection<TItem>
+        public static ValidatorChain<TCollection> NotEmpty<TCollection>(this ValidatorChain<TCollection> chain) where TCollection : ICollection
         {
             if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count == 0)
                 return chain.AddError($"A(z) {chain.DisplayName} nem lehet üres");
             return chain;
         }
-        public static ValidatorChain<TCollection> MinCount<TCollection, TItem>(this ValidatorChain<TCollection> chain, int min) where TCollection : ICollection<TItem>
+        public static ValidatorChain<TCollection> MinCount<TCollection>(this ValidatorChain<TCollection> chain, int min) where TCollection : ICollection
         {
             if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count < min)
                 return chain.AddError($"A(z) {chain.DisplayName} minimum {min} hosszú lehet");
             return chain;
         }
-        public static ValidatorChain<TCollection> MaxCount<TCollection, TItem>(this ValidatorChain<TCollection> chain, int max) where TCollection : ICollection<TItem>
+        public static ValidatorChain<TCollection> MaxCount<TCollection>(this ValidatorChain<TCollection> chain, int max) where TCollection : ICollection
         {
             if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count > max)
                 return chain.AddError($"A(z) {chain.DisplayName} maximum {max} hosszú lehet");
