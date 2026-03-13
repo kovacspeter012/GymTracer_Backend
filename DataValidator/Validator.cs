@@ -13,6 +13,8 @@ namespace GymTracer.DataValidator
     public class Validator<T>
     {
         private readonly T validationModel;
+        public Dictionary<string, string> Errors { get; } = [];
+        public bool IsValid => Errors.Count == 0;
         public Validator(T validatonTarget)
         {
             this.validationModel = validatonTarget;
