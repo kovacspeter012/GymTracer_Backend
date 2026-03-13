@@ -14,5 +14,15 @@
             this.validationFieldName = validationFieldName;
         }
 
+        public ValidatorChain<TProp> NotNull()
+        {
+            if(this.validationField is null)
+            {
+                Message = $"A(z) {validationFieldName} mezőt meg kell adni";
+                IsValid = false;
+            }
+
+            return this;
+        }
     }
 }
