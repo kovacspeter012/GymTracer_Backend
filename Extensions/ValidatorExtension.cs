@@ -76,5 +76,19 @@ namespace GymTracer.Extensions
             return chain;
         }
         #endregion
+        #region BOOLEAN
+        public static ValidatorChain<bool> True(this ValidatorChain<bool> chain)
+        {
+            if(!chain.HasFailed && !chain.ValidationField)
+                return chain.AddError($"A(z) {chain.DisplayName} nem lehet hamis");
+            return chain;
+        }
+        public static ValidatorChain<bool> False(this ValidatorChain<bool> chain)
+        {
+            if (!chain.HasFailed && chain.ValidationField)
+                return chain.AddError($"A(z) {chain.DisplayName} nem lehet igaz");
+            return chain;
+        }
+        #endregion
     }
 }
