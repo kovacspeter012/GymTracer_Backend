@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -313,6 +314,91 @@ namespace GymTracer.Controllers
                             tu.Presence,
                         }));
                     }
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+
+            });
+
+        }
+
+        [HttpPost("{id}/training/{training_id}/{ticket_id}")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult ApplyUserToTraining(int id, int training_id, int ticket_id)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+                    var training = DbContext.Set<Training>().FirstOrDefault(u => u.Id == training_id && u.Active && u.EndTime < tokenHandler.Now());
+
+                    if (training == null)
+                    {
+                        throw new ApiException(400, "No training avaible with this id");
+                    }
+
+                    var userNumOnTraining = DbContext.Set<TrainingUser>().Where(tu => tu.TrainingId == training.Id && tu.OnWaitinglist == false).Count();
+
+                    TrainingUser newTrainingUser;
+
+                    if ((ulong)userNumOnTraining < training.MaxParticipant)
+                    {
+                        newTrainingUser = new TrainingUser()
+                        {
+                            TrainingId = training.Id,
+                            UserId = user!.Id,
+                            ApplicationDate = tokenHandler.Now(),
+                            OnWaitinglist = false,
+                            Presence = false,
+                        };
+                    }
+                    else
+                    {
+                        newTrainingUser = new TrainingUser()
+                        {
+                            TrainingId = training.Id,
+                            UserId = user!.Id,
+                            ApplicationDate = tokenHandler.Now(),
+                            OnWaitinglist = true,
+                            Presence = false,
+                        };
+                    }
+                    
+
+                    if (DbContext.Set<TrainingTicket>().Where(tt => tt.TicketId == ticket_id && tt.TrainingId == training_id).Single() != null)
+                    {
+                        var TicketController = new TicketController(DbContext,tokenHandler);
+                        var retunedData = TicketController.PostTicketAndPayment(id, ticket_id, false, true, User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                        if (retunedData is ObjectResult returnedObjectResult)
+                        {
+                            if (returnedObjectResult.StatusCode == 201)
+                            {
+                                //TODO: email küldése
+                                DbContext.Set<TrainingUser>().Add(newTrainingUser);
+                                DbContext.SaveChanges();
+                            }
+                            else
+                            {
+                                throw new ApiException(400, "Ticket creation unsuccessful");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw new ApiException(400, "Incorrect ticket for training");
+                    }
+
+                    return StatusCode(201, new
+                    {
+                        newTrainingUser.TrainingId,
+                        newTrainingUser.UserId,
+                        newTrainingUser.ApplicationDate,
+                        newTrainingUser.OnWaitinglist,
+                        newTrainingUser.Presence
+                    });
                 }
                 else
                 {
