@@ -27,7 +27,7 @@ namespace GymTracer.DataValidator
 
             var validationFieldName = ((MemberExpression)expression.Body).Member.Name;
 
-            return new ValidatorChain<TProp>(validationField, validationFieldName);
+            return new ValidatorChain<TProp>(validationField, validationFieldName, Errors);
         }
     }
 }
