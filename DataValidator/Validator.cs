@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace GymTracer.DataValidator
 {
@@ -25,7 +24,7 @@ namespace GymTracer.DataValidator
             Func<T, TProp> callback,
             [CallerArgumentExpression(nameof(callback))] string expression = "")
         {
-            int lastDot = expression.LastIndexOf('.');
+            int lastDot = expression.IndexOf('.');
             string fieldName = lastDot == -1 ? expression : expression[(lastDot + 1)..];
 
             TProp fieldValue = callback(validationModel);
