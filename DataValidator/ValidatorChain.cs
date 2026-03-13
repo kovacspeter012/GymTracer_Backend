@@ -1,4 +1,6 @@
-﻿namespace GymTracer.DataValidator
+﻿using System.Runtime.CompilerServices;
+
+namespace GymTracer.DataValidator
 {
     public readonly struct ValidatorChain<TProp>
     {
@@ -21,6 +23,23 @@
         {
             Errors.TryAdd(ValidationFieldName, message);
             return new ValidatorChain<TProp>(ValidationField, ValidationFieldName, Errors, DisplayName, true);
+        }
+
+        public ValidatorChain<TChild> ThenValidate<TChild>(
+            Func<TProp, TChild> callback,
+            string? displayName = null,
+            [CallerArgumentExpression(nameof(callback))] string expression = "")
+        {
+            if (this.ValidationField is null)
+                return new ValidatorChain<TChild>(default!, string.Empty, this.Errors, string.Empty, true);
+
+            int firstDot = expression.IndexOf('.');
+            string childFieldName = firstDot == -1 ? expression : expression[(firstDot + 1)..];
+
+            string fullFieldName = $"{this.ValidationFieldName}.{childFieldName}";
+
+            TChild childValue = callback(this.ValidationField);
+            return new ValidatorChain<TChild>(childValue, fullFieldName, Errors, displayName ?? childFieldName, this.HasFailed);
         }
 
         public ValidatorChain<TProp> NotNull()
