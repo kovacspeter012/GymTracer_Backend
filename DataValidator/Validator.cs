@@ -2,6 +2,14 @@
 
 namespace GymTracer.DataValidator
 {
+    public static class Validator
+    {
+        public static Validator<T> Create<T>(T validatonTarget)
+        {
+            return new Validator<T>(validatonTarget);
+        }
+    }
+
     public class Validator<T>
     {
         private readonly T validationModel;
