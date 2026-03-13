@@ -110,6 +110,37 @@ namespace GymTracer.Extensions
                 return chain.AddError($"A(z) {chain.DisplayName} maximum {max} hosszú lehet");
             return chain;
         }
+        public static ValidatorChain<List<TItem>> ForEach<TItem>(this ValidatorChain<List<TItem>> chain, Action<ValidatorChain<TItem>> chainItemCallback)
+        {
+            return GenericForEach(chain, chainItemCallback);
+        }
+        public static ValidatorChain<TItem[]> ForEach<TItem>(this ValidatorChain<TItem[]> chain, Action<ValidatorChain<TItem>> chainItemCallback)
+        {
+            return GenericForEach(chain, chainItemCallback);
+        }
+        public static ValidatorChain<ICollection<TItem>> ForEach<TItem>(this ValidatorChain<ICollection<TItem>> chain, Action<ValidatorChain<TItem>> chainItemCallback)
+        {
+            return GenericForEach(chain, chainItemCallback);
+        }
+        private static ValidatorChain<TCollection> GenericForEach<TCollection, TItem>(this ValidatorChain<TCollection> chain, Action<ValidatorChain<TItem>> chainItemCallback) where TCollection : ICollection<TItem>
+        {
+            if (!chain.HasFailed && chain.ValidationField is not null)
+            {
+                int index = 0;
+                foreach (TItem item in chain.ValidationField)
+                {
+                    string fieldName = $"{chain.ValidationFieldName}.[{index}]";
+                    string displayName = $"{chain.DisplayName} {index + 1}. eleme";
+
+                    var chainItem = new ValidatorChain<TItem>(item, fieldName, chain.Errors, displayName);
+
+                    chainItemCallback(chainItem);
+
+                    index++;
+                }
+            }
+            return chain;
+        }
         #endregion
     }
 }
