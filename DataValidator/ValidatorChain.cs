@@ -30,5 +30,40 @@
 
             return this;
         }
+
+        public ValidatorChain<TProp> Equal(TProp other, string? customMessage = null)
+        {
+            if(!HasFailed)
+            {
+                bool areEqual = EqualityComparer<TProp>.Default.Equals(this.ValidationField, other);
+                if (!areEqual)
+                {
+                    string message = customMessage ?? $"A(z) {this.DisplayName} meg kell egyezzen ezzel: {other}";
+                    return AddError(message);
+                }
+            }
+            return this;
+        }
+
+        public ValidatorChain<TProp> NotEqual(TProp other, string? customMessage = null)
+        {
+            if(!HasFailed)
+            {
+                bool areEqual = EqualityComparer<TProp>.Default.Equals(this.ValidationField, other);
+                if (areEqual)
+                {
+                    string message = customMessage ?? $"A(z) {this.DisplayName} nem lehet egyenlő ezzel: {other}";
+                    return AddError(message);
+                }
+            }
+            return this;
+        }
+
+        public ValidatorChain<TProp> Must(Func<TProp, bool> predicate, string customMessage)
+        {
+            if(!HasFailed && this.ValidationField is not null && !predicate(this.ValidationField))
+                return AddError(customMessage);
+            return this;
+        }
     }
 }
