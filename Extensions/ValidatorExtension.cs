@@ -1,4 +1,5 @@
 ﻿using GymTracer.DataValidator;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace GymTracer.Extensions
@@ -54,6 +55,26 @@ namespace GymTracer.Extensions
         }
 
         #endregion
-
+        #region NUMERIC
+        public static ValidatorChain<TNum> Min<TNum>(this ValidatorChain<TNum> chain, TNum min) where TNum : INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField < min)
+                return chain.AddError($"A(z) {chain.DisplayName} minimum {min} lehet");
+            return chain;
+        }
+        public static ValidatorChain<TNum> Max<TNum>(this ValidatorChain<TNum> chain, TNum max) where TNum : INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField > max)
+                return chain.AddError($"A(z) {chain.DisplayName} maximum {max} lehet");
+            return chain;
+        }
+        public static ValidatorChain<TNum> Range<TNum>(this ValidatorChain<TNum> chain, TNum min, TNum max) where TNum : INumber<TNum>
+        {
+            if (!chain.HasFailed && 
+                (chain.ValidationField < min || chain.ValidationField > max))
+                return chain.AddError($"A(z) {chain.DisplayName} minimum {min} és maximum {max} lehet");
+            return chain;
+        }
+        #endregion
     }
 }
