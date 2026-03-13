@@ -90,5 +90,25 @@ namespace GymTracer.Extensions
             return chain;
         }
         #endregion
+        #region COLLECTION
+        public static ValidatorChain<TCollection> NotEmpty<TCollection, TItem>(this ValidatorChain<TCollection> chain) where TCollection : ICollection<TItem>
+        {
+            if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count == 0)
+                return chain.AddError($"A(z) {chain.DisplayName} nem lehet üres");
+            return chain;
+        }
+        public static ValidatorChain<TCollection> MinCount<TCollection, TItem>(this ValidatorChain<TCollection> chain, int min) where TCollection : ICollection<TItem>
+        {
+            if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count < min)
+                return chain.AddError($"A(z) {chain.DisplayName} minimum {min} hosszú lehet");
+            return chain;
+        }
+        public static ValidatorChain<TCollection> MaxCount<TCollection, TItem>(this ValidatorChain<TCollection> chain, int max) where TCollection : ICollection<TItem>
+        {
+            if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count > max)
+                return chain.AddError($"A(z) {chain.DisplayName} maximum {max} hosszú lehet");
+            return chain;
+        }
+        #endregion
     }
 }
