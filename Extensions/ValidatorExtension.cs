@@ -8,20 +8,20 @@ namespace GymTracer.Extensions
     public static partial class ValidatorExtension
     {
         #region STRING
-        public static ValidatorChain<string> NotEmpty(this ValidatorChain<string> chain)
+        public static ValidatorChain<string?> NotEmpty(this ValidatorChain<string?> chain)
         {
             if (!chain.HasFailed && string.IsNullOrWhiteSpace(chain.ValidationField))
                 return chain.AddError($"A(z) {chain.DisplayName} nem lehet üres");
             return chain;
         }
 
-        public static ValidatorChain<string> MinLength(this ValidatorChain<string> chain, int length)
+        public static ValidatorChain<string?> MinLength(this ValidatorChain<string?> chain, int length)
         {
             if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Length < length)
                 return chain.AddError($"A(z) {chain.DisplayName} legalább {length} hosszú kell legyen.");
             return chain;
         }
-        public static ValidatorChain<string> MaxLength(this ValidatorChain<string> chain, int length)
+        public static ValidatorChain<string?> MaxLength(this ValidatorChain<string?> chain, int length)
         {
             if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Length > length)
                 return chain.AddError($"A(z) {chain.DisplayName} legfeljebb {length} hosszú kell legyen.");
@@ -30,13 +30,13 @@ namespace GymTracer.Extensions
 
         [GeneratedRegex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")]
         private static partial Regex EmailRegex();
-        public static ValidatorChain<string> Email(this ValidatorChain<string> chain)
+        public static ValidatorChain<string?> Email(this ValidatorChain<string?> chain)
         {
             if (!chain.HasFailed && chain.ValidationField is not null && !EmailRegex().IsMatch(chain.ValidationField))
                 return chain.AddError($"A(z) {chain.DisplayName} nem valid E-mail címként.");
             return chain;
         }
-        public static ValidatorChain<string> Matches(this ValidatorChain<string> chain, Regex regex, string? customMessage = null)
+        public static ValidatorChain<string?> Matches(this ValidatorChain<string?> chain, Regex regex, string? customMessage = null)
         {
             if (!chain.HasFailed && chain.ValidationField is not null && !regex.IsMatch(chain.ValidationField))
             {
@@ -45,7 +45,7 @@ namespace GymTracer.Extensions
             }
             return chain;
         }
-        public static ValidatorChain<string> Matches(this ValidatorChain<string> chain, string regexString, string? customMessage = null)
+        public static ValidatorChain<string?> Matches(this ValidatorChain<string?> chain, string regexString, string? customMessage = null)
         {
             if (!chain.HasFailed && chain.ValidationField is not null && !Regex.IsMatch(chain.ValidationField, regexString))
             {
@@ -76,6 +76,26 @@ namespace GymTracer.Extensions
                 return chain.AddError($"A(z) {chain.DisplayName} minimum {min} és maximum {max} lehet");
             return chain;
         }
+        // Nullable numeric general overloads
+        public static ValidatorChain<TNum?> Min<TNum>(this ValidatorChain<TNum?> chain, TNum min) where TNum : struct, INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField.HasValue && chain.ValidationField.Value < min)
+                return chain.AddError($"A(z) {chain.DisplayName} minimum {min} lehet");
+            return chain;
+        }
+        public static ValidatorChain<TNum?> Max<TNum>(this ValidatorChain<TNum?> chain, TNum max) where TNum : struct, INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField.HasValue && chain.ValidationField.Value > max)
+                return chain.AddError($"A(z) {chain.DisplayName} maximum {max} lehet");
+            return chain;
+        }
+        public static ValidatorChain<TNum?> Range<TNum>(this ValidatorChain<TNum?> chain, TNum min, TNum max) where TNum : struct, INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField.HasValue &&
+                (chain.ValidationField.Value < min || chain.ValidationField.Value > max))
+                return chain.AddError($"A(z) {chain.DisplayName} minimum {min} és maximum {max} lehet");
+            return chain;
+        }
         #endregion
         #region BOOLEAN
         public static ValidatorChain<bool> True(this ValidatorChain<bool> chain)
@@ -90,39 +110,52 @@ namespace GymTracer.Extensions
                 return chain.AddError($"A(z) {chain.DisplayName} nem lehet igaz");
             return chain;
         }
+        // Nullable boolean overloads
+        public static ValidatorChain<bool?> True(this ValidatorChain<bool?> chain)
+        {
+            if (!chain.HasFailed && chain.ValidationField.HasValue && !chain.ValidationField.Value)
+                return chain.AddError($"A(z) {chain.DisplayName} nem lehet hamis");
+            return chain;
+        }
+        public static ValidatorChain<bool?> False(this ValidatorChain<bool?> chain)
+        {
+            if (!chain.HasFailed && chain.ValidationField.HasValue && chain.ValidationField.Value)
+                return chain.AddError($"A(z) {chain.DisplayName} nem lehet igaz");
+            return chain;
+        }
         #endregion
         #region COLLECTION
-        public static ValidatorChain<TCollection> NotEmpty<TCollection>(this ValidatorChain<TCollection> chain) where TCollection : ICollection
+        public static ValidatorChain<TCollection?> NotEmpty<TCollection>(this ValidatorChain<TCollection?> chain) where TCollection : ICollection
         {
             if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count == 0)
                 return chain.AddError($"A(z) {chain.DisplayName} nem lehet üres");
             return chain;
         }
-        public static ValidatorChain<TCollection> MinCount<TCollection>(this ValidatorChain<TCollection> chain, int min) where TCollection : ICollection
+        public static ValidatorChain<TCollection?> MinCount<TCollection>(this ValidatorChain<TCollection?> chain, int min) where TCollection : ICollection
         {
             if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count < min)
                 return chain.AddError($"A(z) {chain.DisplayName} minimum {min} hosszú lehet");
             return chain;
         }
-        public static ValidatorChain<TCollection> MaxCount<TCollection>(this ValidatorChain<TCollection> chain, int max) where TCollection : ICollection
+        public static ValidatorChain<TCollection?> MaxCount<TCollection>(this ValidatorChain<TCollection?> chain, int max) where TCollection : ICollection
         {
             if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count > max)
                 return chain.AddError($"A(z) {chain.DisplayName} maximum {max} hosszú lehet");
             return chain;
         }
-        public static ValidatorChain<List<TItem>> ForEach<TItem>(this ValidatorChain<List<TItem>> chain, Action<ValidatorChain<TItem>> chainItemCallback)
+        public static ValidatorChain<List<TItem>?> ForEach<TItem>(this ValidatorChain<List<TItem>?> chain, Action<ValidatorChain<TItem>> chainItemCallback)
         {
             return GenericForEach(chain, chainItemCallback);
         }
-        public static ValidatorChain<TItem[]> ForEach<TItem>(this ValidatorChain<TItem[]> chain, Action<ValidatorChain<TItem>> chainItemCallback)
+        public static ValidatorChain<TItem[]?> ForEach<TItem>(this ValidatorChain<TItem[]?> chain, Action<ValidatorChain<TItem>> chainItemCallback)
         {
             return GenericForEach(chain, chainItemCallback);
         }
-        public static ValidatorChain<ICollection<TItem>> ForEach<TItem>(this ValidatorChain<ICollection<TItem>> chain, Action<ValidatorChain<TItem>> chainItemCallback)
+        public static ValidatorChain<ICollection<TItem>?> ForEach<TItem>(this ValidatorChain<ICollection<TItem>?> chain, Action<ValidatorChain<TItem>> chainItemCallback)
         {
             return GenericForEach(chain, chainItemCallback);
         }
-        private static ValidatorChain<TCollection> GenericForEach<TCollection, TItem>(this ValidatorChain<TCollection> chain, Action<ValidatorChain<TItem>> chainItemCallback) where TCollection : ICollection<TItem>
+        private static ValidatorChain<TCollection?> GenericForEach<TCollection, TItem>(this ValidatorChain<TCollection?> chain, Action<ValidatorChain<TItem>> chainItemCallback) where TCollection : ICollection<TItem>
         {
             if (!chain.HasFailed && chain.ValidationField is not null)
             {
