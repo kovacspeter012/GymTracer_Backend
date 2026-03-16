@@ -366,7 +366,12 @@ namespace GymTracer.Controllers
                             Presence = false,
                         };
                     }
-                    
+
+                    var trainingUser = DbContext.Set<TrainingUser>().FirstOrDefault(tu => tu.TrainingId == training_id && tu.UserId == id);
+                    if (trainingUser != null)
+                    {
+                        throw new ApiException(400, "User already applied to this training");
+                    }
 
                     if (DbContext.Set<TrainingTicket>().Where(tt => tt.TicketId == ticket_id && tt.TrainingId == training_id).Single() != null)
                     {
@@ -385,6 +390,10 @@ namespace GymTracer.Controllers
                                 throw new ApiException(400, "Ticket creation unsuccessful");
                             }
                         }
+                        else
+                        {
+                            throw new ApiException(400, "No objectresult returned");
+                        }
                     }
                     else
                     {
@@ -399,6 +408,61 @@ namespace GymTracer.Controllers
                         newTrainingUser.OnWaitinglist,
                         newTrainingUser.Presence
                     });
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+
+            });
+
+        }
+
+        [HttpDelete("{id}/training/{training_id}")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult ApplyUserToTraining(int id, int training_id)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    //TODO: Törölni a foglalást ha nem fizetett a user, ha fizetett nem mondhatja le
+                    var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+                    var trainingtickets = DbContext.Set<TrainingTicket>().Where(u => u.TrainingId == training_id).ToList();
+
+                    UserTicket? userticket = null;
+                    foreach (var ticket in trainingtickets)
+                    {
+                        var userTicketSearch = DbContext.Set<UserTicket>().Include(ut => ut.Payment).FirstOrDefault(ut => ut.TicketId == ticket.TicketId && ut.UserId == id);
+                        if (userTicketSearch != null)
+                        {
+                            userticket = userTicketSearch;
+                        }
+                    }
+                    if (userticket == null)
+                    {
+                        throw new ApiException(404, "No application to be deleted");
+                    }
+                    if (userticket.Payment.PaymentDate != null)
+                    {
+                        throw new ApiException(400, "Ticket was payed! No refound can be provided!");
+                    }
+
+                    var trainingUser = DbContext.Set<TrainingUser>().FirstOrDefault(tu => tu.UserId == id && tu.TrainingId == training_id);
+                    if (trainingUser == null)
+                    {
+                        throw new ApiException(404, "No application found");
+                    }
+                    
+                    using var transaction = DbContext.Database.BeginTransaction();
+                    DbContext.Set<Payment>().Remove(userticket.Payment);
+                    DbContext.Set<UserTicket>().Remove(userticket);
+                    DbContext.Set<TrainingUser>().Remove(trainingUser);
+                    DbContext.SaveChanges();
+                    transaction.Commit();
+
+                    return StatusCode(204, "Application successfully deleted");
+
                 }
                 else
                 {
