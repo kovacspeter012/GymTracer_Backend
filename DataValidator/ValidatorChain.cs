@@ -84,5 +84,16 @@ namespace GymTracer.DataValidator
                 return AddError(customMessage);
             return this;
         }
+
+        public async Task<ValidatorChain<TProp>> MustAsync(Func<TProp, Task<bool>> predicate, string customMessage)
+        {
+            if(!HasFailed && this.ValidationField is not null)
+            {
+                bool isValid = await predicate(this.ValidationField);
+                if(!isValid)
+                    return AddError(customMessage);
+            }
+            return this;
+        }
     }
 }
