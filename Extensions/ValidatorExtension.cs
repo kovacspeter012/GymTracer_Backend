@@ -63,17 +63,36 @@ namespace GymTracer.Extensions
                 return chain.AddError($"A(z) {chain.DisplayName} minimum {min} lehet");
             return chain;
         }
+        public static ValidatorChain<TNum> GreaterThan<TNum>(this ValidatorChain<TNum> chain, TNum min) where TNum : INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField <= min)
+                return chain.AddError($"A(z) {chain.DisplayName} nagyobb kell legyen, mint {min}");
+            return chain;
+        }
         public static ValidatorChain<TNum> Max<TNum>(this ValidatorChain<TNum> chain, TNum max) where TNum : INumber<TNum>
         {
             if (!chain.HasFailed && chain.ValidationField > max)
                 return chain.AddError($"A(z) {chain.DisplayName} maximum {max} lehet");
             return chain;
         }
-        public static ValidatorChain<TNum> Range<TNum>(this ValidatorChain<TNum> chain, TNum min, TNum max) where TNum : INumber<TNum>
+        public static ValidatorChain<TNum> LessThan<TNum>(this ValidatorChain<TNum> chain, TNum max) where TNum : INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField >= max)
+                return chain.AddError($"A(z) {chain.DisplayName} kisebb kell legyen, mint {max}");
+            return chain;
+        }
+        public static ValidatorChain<TNum> Between<TNum>(this ValidatorChain<TNum> chain, TNum min, TNum max) where TNum : INumber<TNum>
         {
             if (!chain.HasFailed && 
                 (chain.ValidationField < min || chain.ValidationField > max))
                 return chain.AddError($"A(z) {chain.DisplayName} minimum {min} és maximum {max} lehet");
+            return chain;
+        }
+        public static ValidatorChain<TNum> BetweenStrict<TNum>(this ValidatorChain<TNum> chain, TNum min, TNum max) where TNum : INumber<TNum>
+        {
+            if (!chain.HasFailed &&
+                (chain.ValidationField <= min || chain.ValidationField >= max))
+                return chain.AddError($"A(z) {chain.DisplayName} szigorúan {min} és {max} között kell legyen");
             return chain;
         }
         // Nullable numeric general overloads
@@ -83,17 +102,36 @@ namespace GymTracer.Extensions
                 return chain.AddError($"A(z) {chain.DisplayName} minimum {min} lehet");
             return chain;
         }
+        public static ValidatorChain<TNum?> GreaterThan<TNum>(this ValidatorChain<TNum?> chain, TNum min) where TNum : struct, INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField.HasValue && chain.ValidationField.Value <= min)
+                return chain.AddError($"A(z) {chain.DisplayName} nagyobb kell legyen, mint {min}");
+            return chain;
+        }
         public static ValidatorChain<TNum?> Max<TNum>(this ValidatorChain<TNum?> chain, TNum max) where TNum : struct, INumber<TNum>
         {
             if (!chain.HasFailed && chain.ValidationField.HasValue && chain.ValidationField.Value > max)
                 return chain.AddError($"A(z) {chain.DisplayName} maximum {max} lehet");
             return chain;
         }
-        public static ValidatorChain<TNum?> Range<TNum>(this ValidatorChain<TNum?> chain, TNum min, TNum max) where TNum : struct, INumber<TNum>
+        public static ValidatorChain<TNum?> LessThan<TNum>(this ValidatorChain<TNum?> chain, TNum max) where TNum : struct, INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField.HasValue && chain.ValidationField.Value >= max)
+                return chain.AddError($"A(z) {chain.DisplayName} kisebb kell legyen, mint {max}");
+            return chain;
+        }
+        public static ValidatorChain<TNum?> Between<TNum>(this ValidatorChain<TNum?> chain, TNum min, TNum max) where TNum : struct, INumber<TNum>
         {
             if (!chain.HasFailed && chain.ValidationField.HasValue &&
                 (chain.ValidationField.Value < min || chain.ValidationField.Value > max))
                 return chain.AddError($"A(z) {chain.DisplayName} minimum {min} és maximum {max} lehet");
+            return chain;
+        }
+        public static ValidatorChain<TNum?> BetweenStrict<TNum>(this ValidatorChain<TNum?> chain, TNum min, TNum max) where TNum : struct, INumber<TNum>
+        {
+            if (!chain.HasFailed && chain.ValidationField.HasValue &&
+                (chain.ValidationField.Value <= min || chain.ValidationField.Value >= max))
+                return chain.AddError($"A(z) {chain.DisplayName} szigorúan {min} és {max} között kell legyen");
             return chain;
         }
         #endregion
