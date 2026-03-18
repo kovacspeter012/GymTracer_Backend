@@ -335,5 +335,20 @@ namespace GymTracer.Extensions
             return chain;
         }
         #endregion
+        #region ENUM
+        public static ValidatorChain<TEnum> InEnum<TEnum>(this ValidatorChain<TEnum> chain) where TEnum : struct, Enum
+        {
+            if (!chain.HasFailed && !Enum.IsDefined(chain.ValidationField))
+                return chain.AddError($"A(z) {chain.DisplayName} értéke érvénytelen.");
+            return chain;
+        }
+        // Nullable enum overloads
+        public static ValidatorChain<TEnum?> InEnum<TEnum>(this ValidatorChain<TEnum?> chain) where TEnum : struct, Enum
+        {
+            if (!chain.HasFailed && chain.ValidationField.HasValue && !Enum.IsDefined(chain.ValidationField.Value))
+                return chain.AddError($"A(z) {chain.DisplayName} értéke érvénytelen.");
+            return chain;
+        }
+        #endregion
     }
 }
