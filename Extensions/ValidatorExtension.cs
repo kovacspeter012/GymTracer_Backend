@@ -254,10 +254,30 @@ namespace GymTracer.Extensions
         }
         #endregion
         #region COLLECTION
-        public static ValidatorChain<TCollection?> NotEmpty<TCollection>(this ValidatorChain<TCollection?> chain) where TCollection : ICollection
+        // NotNullOrEmpty for both strings and collections
+        public static ValidatorChain<TCollection> NotNullOrEmpty<TCollection>(this ValidatorChain<TCollection> chain) where TCollection : IEnumerable?
         {
-            if (!chain.HasFailed && 
-                (chain.ValidationField is null || chain.ValidationField.Count == 0))
+            return chain.NotNull().NotEmpty();
+        }
+        // NotEmpty for both strings and collections
+        public static ValidatorChain<TCollection> NotEmpty<TCollection>(this ValidatorChain<TCollection> chain) where TCollection : IEnumerable?
+        {
+            if (chain.HasFailed || chain.ValidationField is null)
+                return chain;
+
+            bool isEmpty;
+            if(chain.ValidationField is string s)
+                isEmpty = string.IsNullOrEmpty(s);
+            else if(chain.ValidationField is ICollection c)
+                isEmpty = c.Count == 0;
+            else
+        {
+                var enumerator = chain.ValidationField.GetEnumerator();
+
+                isEmpty = !enumerator.MoveNext();
+            }
+                
+            if (isEmpty)
                 return chain.AddError($"A(z) {chain.DisplayName} nem lehet üres");
             return chain;
         }
