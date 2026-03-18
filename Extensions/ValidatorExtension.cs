@@ -8,46 +8,55 @@ namespace GymTracer.Extensions
     public static partial class ValidatorExtension
     {
         #region STRING
-        public static ValidatorChain<string?> NotEmpty(this ValidatorChain<string?> chain)
+        // string NotEmpty is moved to and is merged with collection NotEmpty
+        public static ValidatorChain<T> MinLength<T>(this ValidatorChain<T> chain, int length) where T : IEnumerable<char>?
         {
-            if (!chain.HasFailed && string.IsNullOrWhiteSpace(chain.ValidationField))
-                return chain.AddError($"A(z) {chain.DisplayName} nem lehet üres");
-            return chain;
-        }
+            if (chain.ValidationField is not string stringValue)
+                return chain;
 
-        public static ValidatorChain<string?> MinLength(this ValidatorChain<string?> chain, int length)
-        {
-            if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Length < length)
+            if (!chain.HasFailed && stringValue.Length < length)
                 return chain.AddError($"A(z) {chain.DisplayName} legalább {length} hosszú kell legyen.");
             return chain;
         }
-        public static ValidatorChain<string?> MaxLength(this ValidatorChain<string?> chain, int length)
+        public static ValidatorChain<T> MaxLength<T>(this ValidatorChain<T> chain, int length) where T : IEnumerable<char>?
         {
-            if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Length > length)
+            if (chain.ValidationField is not string stringValue)
+                return chain;
+
+            if (!chain.HasFailed && stringValue.Length > length)
                 return chain.AddError($"A(z) {chain.DisplayName} legfeljebb {length} hosszú kell legyen.");
             return chain;
         }
 
         [GeneratedRegex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")]
         private static partial Regex EmailRegex();
-        public static ValidatorChain<string?> Email(this ValidatorChain<string?> chain)
+        public static ValidatorChain<T> Email<T>(this ValidatorChain<T> chain) where T : IEnumerable<char>?
         {
-            if (!chain.HasFailed && chain.ValidationField is not null && !EmailRegex().IsMatch(chain.ValidationField))
+            if (chain.ValidationField is not string stringValue)
+                return chain;
+
+            if (!chain.HasFailed && !EmailRegex().IsMatch(stringValue))
                 return chain.AddError($"A(z) {chain.DisplayName} nem valid E-mail címként.");
             return chain;
         }
-        public static ValidatorChain<string?> Matches(this ValidatorChain<string?> chain, Regex regex, string? customMessage = null)
+        public static ValidatorChain<T> Matches<T>(this ValidatorChain<T> chain, Regex regex, string? customMessage = null) where T : IEnumerable<char>?
         {
-            if (!chain.HasFailed && chain.ValidationField is not null && !regex.IsMatch(chain.ValidationField))
+            if (chain.ValidationField is not string stringValue)
+                return chain;
+
+            if (!chain.HasFailed && !regex.IsMatch(stringValue))
             {
                 string message = customMessage ?? $"A(z) {chain.DisplayName} nem felelt meg a validációs feltételnek";
                 return chain.AddError(message);
             }
             return chain;
         }
-        public static ValidatorChain<string?> Matches(this ValidatorChain<string?> chain, string regexString, string? customMessage = null)
+        public static ValidatorChain<T> Matches<T>(this ValidatorChain<T> chain, string regexString, string? customMessage = null) where T : IEnumerable<char>?
         {
-            if (!chain.HasFailed && chain.ValidationField is not null && !Regex.IsMatch(chain.ValidationField, regexString))
+            if (chain.ValidationField is not string stringValue)
+                return chain;
+
+            if (!chain.HasFailed && !Regex.IsMatch(stringValue, regexString))
             {
                 string message = customMessage ?? $"A(z) {chain.DisplayName} nem felelt meg a validációs feltételnek";
                 return chain.AddError(message);
@@ -271,7 +280,7 @@ namespace GymTracer.Extensions
             else if(chain.ValidationField is ICollection c)
                 isEmpty = c.Count == 0;
             else
-        {
+            {
                 var enumerator = chain.ValidationField.GetEnumerator();
                 using var disposable = enumerator as IDisposable;
 
