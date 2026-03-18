@@ -256,7 +256,8 @@ namespace GymTracer.Extensions
         #region COLLECTION
         public static ValidatorChain<TCollection?> NotEmpty<TCollection>(this ValidatorChain<TCollection?> chain) where TCollection : ICollection
         {
-            if (!chain.HasFailed && chain.ValidationField is not null && chain.ValidationField.Count == 0)
+            if (!chain.HasFailed && 
+                (chain.ValidationField is null || chain.ValidationField.Count == 0))
                 return chain.AddError($"A(z) {chain.DisplayName} nem lehet üres");
             return chain;
         }
@@ -292,7 +293,7 @@ namespace GymTracer.Extensions
                 foreach (TItem item in chain.ValidationField)
                 {
                     string fieldName = $"{chain.ValidationFieldName}.[{index}]";
-                    string displayName = $"{chain.DisplayName} {index + 1}. eleme";
+                    string displayName = $"{index + 1}. {chain.DisplayName}";
 
                     var chainItem = new ValidatorChain<TItem>(item, fieldName, chain.Errors, displayName);
 
