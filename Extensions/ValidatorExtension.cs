@@ -97,6 +97,52 @@ namespace GymTracer.Extensions
             return chain;
         }
         #endregion
+        #region DATETIME
+        public static ValidatorChain<DateTime> Before(this ValidatorChain<DateTime> chain, DateTime maxDate)
+        {
+            if (!chain.HasFailed && chain.ValidationField > maxDate)
+                return chain.AddError($"A(z) {chain.DisplayName} nem lehet {maxDate:yyyy.MM.dd. HH:mm} után");
+            return chain;
+        }
+        public static ValidatorChain<DateTime> BeforeStrict(this ValidatorChain<DateTime> chain, DateTime maxDate)
+        {
+            if (!chain.HasFailed && chain.ValidationField >= maxDate)
+                return chain.AddError($"A(z) {chain.DisplayName} korábban kell legyen, mint {maxDate:yyyy.MM.dd. HH:mm}");
+            return chain;
+        }
+        public static ValidatorChain<DateTime> After(this ValidatorChain<DateTime> chain, DateTime minDate)
+        {
+            if (!chain.HasFailed && chain.ValidationField < minDate)
+                return chain.AddError($"A(z) {chain.DisplayName} nem lehet {minDate:yyyy.MM.dd. HH:mm} előtt");
+            return chain;
+        }
+        public static ValidatorChain<DateTime> AfterStrict(this ValidatorChain<DateTime> chain, DateTime minDate)
+        {
+            if (!chain.HasFailed && chain.ValidationField <= minDate)
+                return chain.AddError($"A(z) {chain.DisplayName} később kell legyen, mint {minDate:yyyy.MM.dd. HH:mm}");
+            return chain;
+        }
+        public static ValidatorChain<DateTime> Between(this ValidatorChain<DateTime> chain, DateTime minDate, DateTime maxDate)
+        {
+            if (!chain.HasFailed &&
+                (chain.ValidationField < minDate || chain.ValidationField > maxDate))
+                return chain.AddError($"A(z) {chain.DisplayName} {minDate:yyyy.MM.dd. HH:mm} és {maxDate:yyyy.MM.dd. HH:mm} között kell legyen");
+            return chain;
+        }
+        public static ValidatorChain<DateTime> BetweenStrict(this ValidatorChain<DateTime> chain, DateTime minDate, DateTime maxDate)
+        {
+            if (!chain.HasFailed &&
+                (chain.ValidationField <= minDate || chain.ValidationField >= maxDate))
+                return chain.AddError($"A(z) {chain.DisplayName} szigorúan {minDate:yyyy.MM.dd. HH:mm} és {maxDate:yyyy.MM.dd. HH:mm} között kell legyen");
+            return chain;
+        }
+        public static ValidatorChain<DateTime> NotDefault(this ValidatorChain<DateTime> chain)
+        {
+            if (!chain.HasFailed && chain.ValidationField == default)
+                return chain.AddError($"A(z) {chain.DisplayName} nem lehet üres");
+            return chain;
+        }
+        #endregion
         #region BOOLEAN
         public static ValidatorChain<bool> True(this ValidatorChain<bool> chain)
         {
