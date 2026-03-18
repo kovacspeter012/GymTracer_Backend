@@ -273,6 +273,7 @@ namespace GymTracer.Extensions
             else
         {
                 var enumerator = chain.ValidationField.GetEnumerator();
+                using var disposable = enumerator as IDisposable;
 
                 isEmpty = !enumerator.MoveNext();
             }
