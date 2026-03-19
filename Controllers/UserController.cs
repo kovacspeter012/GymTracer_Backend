@@ -519,7 +519,39 @@ namespace GymTracer.Controllers
                 ));
             });
         }
+        
+        [HttpPut("{id}/role")]
+        [Authorize(Roles = nameof(User_Role.admin))]
+        public IActionResult ModifyRoleOfUser(int id, [FromBody] User_Role role)
+        {
+            return this.Run(() =>
+            {
+                var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+                var loggedInUser = DbContext.Set<User>().FirstOrDefault(u => u.Id.ToString() == loggedInUserId);
+
+                var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+
+                if (user != null)
+                {
+                    user.Role = role;
+                }
+                else
+                {
+                    throw new ApiException(400, "No user found");
+                }
+                if (loggedInUser!.Id == user.Id)
+                {
+                    throw new ApiException(400, "You can't modify your own role");
+                }
+
+                DbContext.Update(user);
+                DbContext.SaveChanges();
+
+                return StatusCode(200, "User role has been changed!");
+            });
+
+        }
         [NonAction]
         public bool IsAuthorized(int id)
         {
