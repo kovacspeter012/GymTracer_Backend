@@ -426,7 +426,6 @@ namespace GymTracer.Controllers
             {
                 if (IsAuthorized(id))
                 {
-                    //TODO: Törölni a foglalást ha nem fizetett a user, ha fizetett nem mondhatja le
                     var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
                     var trainingtickets = DbContext.Set<TrainingTicket>().Where(u => u.TrainingId == training_id).ToList();
 
@@ -458,7 +457,7 @@ namespace GymTracer.Controllers
                     DbContext.Set<Payment>().Remove(userticket.Payment);
                     DbContext.Set<UserTicket>().Remove(userticket);
                     DbContext.Set<TrainingUser>().Remove(trainingUser);
-                    DbContext.SaveChanges();
+                    DbContext.SaveChanges(); 
                     transaction.Commit();
 
                     return StatusCode(204, "Application successfully deleted");
@@ -471,6 +470,46 @@ namespace GymTracer.Controllers
 
             });
 
+        }
+
+        [HttpGet("")]
+        [Authorize(Roles = nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult GetUserByParameter([FromQuery] string? name, [FromQuery] string? email)
+        {
+            return this.Run(() =>
+            {
+                List<User> users = [];
+                if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(email))
+                {
+                    return StatusCode(400, "At least one parameter requierd");
+                }
+                else if (string.IsNullOrEmpty(name))
+                {
+                    users = DbContext.Set<User>().Where(u => u.Email.Contains(email)).ToList();
+                }
+                else if (string.IsNullOrEmpty(email))
+                {
+                    users = DbContext.Set<User>().Where(u => u.Name.Contains(name)).ToList();
+                }
+                else
+                {
+                    throw new ApiException(400, "Bad request");
+                }
+
+                if (users.Count == 0)
+                {
+                    throw new ApiException(400, "No user found");
+                }
+
+                return StatusCode(200, users.Select(u => new
+                    {
+                        name = u.Name,
+                        email = u.Email,
+                        birthDate = u.BirthDate,
+                        creationDate = u.CreationDate,
+                    }
+                ));
+            });
         }
 
         [NonAction]
