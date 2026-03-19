@@ -457,7 +457,15 @@ namespace GymTracer.Controllers
                     DbContext.Set<Payment>().Remove(userticket.Payment);
                     DbContext.Set<UserTicket>().Remove(userticket);
                     DbContext.Set<TrainingUser>().Remove(trainingUser);
-                    DbContext.SaveChanges(); 
+                    DbContext.SaveChanges();
+                    
+                    TrainingUser? userNextInQueueForTraining = DbContext.Set<TrainingUser>().Where(tu => tu.TrainingId == training_id && tu.OnWaitinglist == true).MinBy(tu => tu.ApplicationDate);
+                    if (userNextInQueueForTraining != null)
+                    {
+                        userNextInQueueForTraining.OnWaitinglist = false;
+                        DbContext.Update(userNextInQueueForTraining);
+                        DbContext.SaveChanges();
+                    }
                     transaction.Commit();
 
                     return StatusCode(204, "Application successfully deleted");

@@ -169,7 +169,7 @@ namespace GymTracer.Controllers
                         newPayment = new Payment()
                         {
                             IssuerId = int.Parse(loggedInUserId!),
-                            DueDate = tokenHandler.Now().AddDays(7),
+                            DueDate = tokenHandler.Now().AddMonths(2),
                             PaymentDate = null,
                             TotalPrice = ticket.Price,
                             ReceiptNumber = "REC-" + nextRecipeNum.ToString()
