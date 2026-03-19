@@ -78,13 +78,13 @@ namespace GymTracer.Controllers
                 if (dbUser is null || !dbUser.Active || !passwordHandler.ComparePasswords(User.Password, dbUser.Password))
                     return BadRequest(new { error = "Hibás email cím vagy jelszó!" });
 
-                tokenHandler.GenerateTokenData(out string tokenString, out string tokenHash, out DateTime createdAt, out DateTime revokedAt);
+                tokenHandler.GenerateTokenData(out string tokenString, out DateTime createdAt, out DateTime revokedAt);
 
                 dbContext.Tokens.Add(new models.Token {
                     UserId = dbUser.Id,
                     CreatedAt = createdAt,
                     RevokedAt = revokedAt,
-                    TokenString = tokenHash
+                    TokenString = tokenString
                 });
                 dbContext.SaveChanges();
 

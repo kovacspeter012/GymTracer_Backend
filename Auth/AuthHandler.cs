@@ -39,13 +39,12 @@ namespace GymTracer.Auth
 
         private async Task<AuthenticateResult> HandleToken(string tokenString)
         {
-            string tokenHash = tokenHandler.HashToken(tokenString);
-            Token? sessionToken = dbContext.Set<Token>().Include(s => s.User).SingleOrDefault(s => s.TokenString == tokenHash);
+            Token? sessionToken = dbContext.Set<Token>().Include(s => s.User).SingleOrDefault(s => s.TokenString == tokenString);
 
-            if (sessionToken is null || sessionToken.RevokedAt.AddMinutes(Options.ExpirationInMinutes) <= DateTime.UtcNow)
+            if (sessionToken is null || sessionToken.RevokedAt <= tokenHandler.Now())
                 return await Task.FromResult(AuthenticateResult.Fail("Authentication failed"));
 
-            sessionToken.RevokedAt = DateTime.UtcNow.AddMinutes(Options.ExpirationInMinutes);
+            sessionToken.RevokedAt = tokenHandler.Now().AddMinutes(Options.ExpirationInMinutes);
             dbContext.Update(sessionToken);
             dbContext.SaveChanges();
 

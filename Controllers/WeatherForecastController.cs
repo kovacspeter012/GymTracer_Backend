@@ -1,4 +1,6 @@
 using GymTracer.Exceptions;
+using GymTracer.models;
+using Microsoft.AspNetCore.Authorization;
 using GymTracer.Extensions;
 using Microsoft.AspNetCore.Mvc;
 

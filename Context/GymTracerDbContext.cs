@@ -49,6 +49,8 @@ namespace GymTracer.Context
 
             modelBuilder.Entity<Ticket>().ToTable(t => t.HasCheckConstraint("Tax_key_positive", "\"Tax_key\" >= 0"));
 
+            modelBuilder.Entity<UserTicket>().HasIndex(ut => ut.PaymentId).IsUnique();
+
             var options = new JsonSerializerOptions()
             {
                 PropertyNameCaseInsensitive = true
