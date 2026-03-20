@@ -98,9 +98,16 @@ namespace GymTracer.Controllers
                 if(userId is null || userRole is null)
                     return BadRequest("Hibás token!");
 
-                // trainingId 0, mert új, és még nincs id-je
-                if(ProblemWithValidatingTraining(training, true, id, userId, 0, userRole) is string problem)
-                    return BadRequest(problem);
+                if (userId != id.ToString())
+                    if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
+                        return BadRequest("Csak saját nevedben készíthetsz edzést!");
+
+                var ValidatorResult = ValidateTraining(training);
+                if (!ValidatorResult.IsValid)
+                    return BadRequest(new { ValidatorResult.Errors });
+
+                if (dbContext.Trainings.Any(t => t.Active && t.StartTime < training.EndTime && training.StartTime < t.EndTime))
+                    return BadRequest("Ebben az időintervallumban már van regisztrált edzés!");
 
                 User? dbTrainer = dbContext.Users.FirstOrDefault(u => u.Id == id);
 
@@ -120,15 +127,15 @@ namespace GymTracer.Controllers
                     TrainingTickets = []
                 };
 
+                var TicketTrainingValidatorResult = ValidateTickets(training.TrainingTickets);
+                if (!TicketTrainingValidatorResult.IsValid)
+                    return BadRequest(new { TicketTrainingValidatorResult.Errors });
 
                 // Training Ticketjeinek létrehozása (ha meg lettek adva)
                 foreach (TrainingTicket tt in training.TrainingTickets)
                 {
                     if (tt.Ticket is null)
                         continue;
-                    if (ProblemWithValidatingTicket(tt.Ticket) is string ticketProblem)
-                        return BadRequest(ticketProblem);
-
                     dbTraining.TrainingTickets.Add(new TrainingTicket()
                     {
                         Training = dbTraining,
@@ -168,7 +175,19 @@ namespace GymTracer.Controllers
                         {
                             dbTrainer.Id,
                             dbTrainer.Name
-                        }
+                        },
+                        trainingTickets = dbTraining.TrainingTickets.Select(tt => new
+                        {
+                            ticket = new
+                            {
+                                tt.Ticket.Id,
+                                tt.Ticket.Description,
+                                tt.Ticket.IsStudent,
+                                tt.Ticket.Price,
+                                tt.Ticket.Type,
+                                tt.Ticket.MaxUsage
+                            }
+                        })
                     }
                 });
             });
