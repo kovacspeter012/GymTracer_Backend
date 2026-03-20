@@ -1,5 +1,6 @@
 ﻿using GymTracer.Auth;
 using GymTracer.Context;
+using GymTracer.DataValidator;
 using GymTracer.Extensions;
 using GymTracer.models;
 using Microsoft.AspNetCore.Authorization;
@@ -314,56 +315,65 @@ namespace GymTracer.Controllers
         }
 
         [NonAction]
-        public string? ProblemWithValidatingTraining(Training training, bool isCreate, long id, string userId, long trainingId, string userRole)
+        public Validator<Training> ValidateTraining(Training training)
         {
-            string apiActionText = isCreate ? "hozhat létre" : "módosíthat";
+            var trainingValidator = Validator.Create(training);
 
-            if (userId != id.ToString())
-            {
-                if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
-                    return $"Csak saját nevében {apiActionText} edzést!";
+            trainingValidator.Validate(t => t.StartTime, "edzés kezdete")
+                .NotDefault()
+                .After(DateTime.UtcNow)
+                .Before(DateTime.UtcNow.AddMonths(1));
 
-                User? selectedUser = dbContext.Users.FirstOrDefault(u => u.Id == id);
-                if (selectedUser is null)
-                    return "Nincs ilyen felhasználó!";
-            }
+            trainingValidator.Validate(t => t.EndTime, "edzés vége")
+                .NotDefault()
+                .After(training.StartTime)
+                .Before(DateTime.UtcNow.AddMonths(1));
 
-            TimeSpan trainingTimeSpan = training.EndTime - training.StartTime;
-            if (training.StartTime < tokenHandler.Now() || training.EndTime < tokenHandler.Now())
-                return "Az edzés időpontja érvénytelen!";
+            // Edzés hossza
+            trainingValidator.Validate(t =>
+              (t.EndTime - t.StartTime).TotalMinutes,
+              "edzés időtartalma", "StartTime")
+                .Between(5, 2 * 60);
 
-            if (trainingTimeSpan.TotalMinutes < 5)
-                return "Az edzés időtartama legalább 5 perc kell legyen!";
-            else if (trainingTimeSpan.TotalHours > 2)
-                return "Az edzés időtartama legfeljebb 2 óra lehet!";
+            trainingValidator.Validate(t => t.Name, "edzés név")
+                .NotNullOrEmpty();
 
-            if (string.IsNullOrEmpty(training.Name) || training.Name.Trim() == "")
-                return "Az edzésnek valid névvel kell rendelkeznie!";
+            trainingValidator.Validate(t => t.Description, "edzés leírás")
+                .NotNullOrEmpty();
 
-            if (string.IsNullOrEmpty(training.Description) || training.Description.Trim() == "")
-                return "Az edzésnek valid leírással kell rendelkeznie!";
+            trainingValidator.Validate(t => t.Image, "edzés kép")
+                .NotNullOrEmpty();
 
-            // TODO: Feltöltött kép validáció
-            if (string.IsNullOrEmpty(training.Image) || training.Image.Trim() == "")
-                return "Az edzésnek valid képpel kell rendelkeznie!";
+            trainingValidator.Validate(t => t.MaxParticipant, "résztvevő szám")
+                .GreaterThan(0ul)
+                .LessThan(100ul);
 
-            if (training.MaxParticipant == 0)
-                return "Az edzésnek legalább 1 résztvevővel kell rendelkeznie!";
-
-            if (dbContext.Trainings.Any(t => t.Active && t.StartTime < training.EndTime && training.StartTime < t.EndTime && t.Id != trainingId))
-                return "Ebben az időintervallumban már van regisztrált edzés!";
-
-            return null;
+            return trainingValidator;
         }
 
         [NonAction]
 
-        public string? ProblemWithValidatingTicket(Ticket ticket)
+        public Validator<ICollection<TrainingTicket>> ValidateTickets(ICollection<TrainingTicket> trainingTickets)
         {
-            if (string.IsNullOrEmpty(ticket.Description) || ticket.Description.Trim() == "")
-                return "A jegynek kell leírást adni";
+            var trainingTicketsValidator = Validator.Create(trainingTickets);
+            trainingTicketsValidator.Validate(t => t, "TrainingTickets", "TrainingTickets")!
+                .ForEach(trainingTicket =>
+        {
+                    var TicketValidatorChain = trainingTicket.ThenValidate(tt => tt.Ticket, "jegy")
+                                                             .NotNull();
 
-            return null;
+                    TicketValidatorChain.ThenValidate(ticket => ticket.Description, "jegy leírás")
+                        .NotNullOrEmpty();
+
+                    TicketValidatorChain.ThenValidate(ticket => ticket.Price, "jegy ár")
+                        .Min(0ul)
+                        .Max(ulong.MaxValue);
+
+                    TicketValidatorChain.ThenValidate(ticket => ticket.Type, "jegy típus")
+                        .InEnum();
+                });
+
+            return trainingTicketsValidator;
         }
     }
 }
