@@ -13,7 +13,6 @@ namespace GymTracer.Context
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<Training> Trainings { get; set; }
-        public DbSet<TrainingTicket> TrainingTickets { get; set; }
         public DbSet<TrainingUser> TrainingUsers { get; set; }
         public DbSet<UsageLog> UsageLogs { get; set; }
         public DbSet<User> Users { get; set; }
@@ -45,8 +44,6 @@ namespace GymTracer.Context
 
             modelBuilder.Entity<TrainingUser>().HasIndex(t => new { t.TrainingId, t.UserId }).IsUnique();
 
-            modelBuilder.Entity<TrainingTicket>().HasIndex(t => new { t.TrainingId, t.TicketId }).IsUnique();
-
             modelBuilder.Entity<Ticket>().Property(t => t.IsActive).HasDefaultValue(true);
             modelBuilder.Entity<Ticket>().HasIndex(t => t.IsActive);
             modelBuilder.Entity<Ticket>().ToTable(t => t.HasCheckConstraint("Tax_key_positive", "\"Tax_key\" >= 0"));
@@ -73,9 +70,6 @@ namespace GymTracer.Context
 
             var trainings = JsonSerializer.Deserialize<List<Training>>(File.ReadAllText("ExampleData/Trainings.json"), options) ?? [];
             modelBuilder.Entity<Training>().HasData(trainings);
-
-            var trainingTickets = JsonSerializer.Deserialize<List<TrainingTicket>>(File.ReadAllText("ExampleData/TrainingTickets.json"), options) ?? [];
-            modelBuilder.Entity<TrainingTicket>().HasData(trainingTickets);
 
             var trainingUsers = JsonSerializer.Deserialize<List<TrainingUser>>(File.ReadAllText("ExampleData/TrainingUsers.json"), options) ?? [];
             modelBuilder.Entity<TrainingUser>().HasData(trainingUsers);

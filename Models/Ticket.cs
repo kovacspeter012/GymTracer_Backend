@@ -39,7 +39,9 @@ public partial class Ticket : ModelBase<Ticket>
     [Required]
     public bool IsActive { get; set; } = true;
 
-    public virtual ICollection<TrainingTicket> TrainingTickets { get; set; } = new List<TrainingTicket>();
+    public long? TrainingId { get; set; }
+
+    public virtual Training? Training { get; set; } = null!;
 
     public virtual ICollection<UserTicket> UserTickets { get; set; } = new List<UserTicket>();
 }
