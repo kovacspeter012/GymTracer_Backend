@@ -192,24 +192,75 @@ namespace GymTracer.Controllers
                 if (userId is null || userRole is null)
                     return BadRequest("Hibás token!");
 
-                Training? dbTraining = dbContext.Trainings.FirstOrDefault(t => t.Id == training_id && t.Active);
+                Training? dbTraining = dbContext.Trainings
+                                    .Include(t => t.Trainer)
+                                    .Include(t => t.Tickets)
+                                    .FirstOrDefault(t => t.Id == training_id && t.Active);
 
                 if (dbTraining is null)
                     return BadRequest("Nincs ilyen edzés!");
 
-                // Ellenőrzi: dbTraining.TrainerId == userId
-                if (ProblemWithValidatingTraining(training, false, dbTraining.TrainerId, userId, training_id, userRole) is string problem)
-                    return BadRequest(problem);
+                if (userId != dbTraining.TrainerId.ToString())
+                    if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
+                        return BadRequest("Csak a saját edzésedet módosíthatod!");
 
                 if (training.TrainerId == 0)
-                {
                     training.TrainerId = dbTraining.TrainerId;
+
+                if (dbTraining.TrainerId != training.TrainerId)
+                    if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
+                        return BadRequest("Az edzést nem adhatja át másnak.");
+
+                var ValidatorResult = ValidateTraining(training);
+                if (!ValidatorResult.IsValid)
+                    return BadRequest(new { ValidatorResult.Errors });
+
+                if (dbContext.Trainings.Any(t => t.Active && t.Id != training_id && t.StartTime < training.EndTime && training.StartTime < t.EndTime))
+                    return BadRequest("Ebben az időintervallumban már van regisztrált edzés!");
+
+                var TicketValidatorResult = ValidateTickets(training.Tickets);
+                if (!TicketValidatorResult.IsValid)
+                    return BadRequest(new { TicketValidatorResult.Errors });
+
+                var incomingTicketIds = training.Tickets.Where(t => t.Id != 0)
+                                                        .Select(t => t.Id)
+                                                        .ToList();
+
+                var ticketsToRemove = dbTraining.Tickets.Where(db_t => db_t.IsActive && !incomingTicketIds.Contains(db_t.Id))
+                                                        .ToList();
+
+                foreach (Ticket toRemove in ticketsToRemove)
+                {
+                    toRemove.IsActive = false;
+                    // TODO: megnézni hogy ki lett-e fizetve valakinek, ha igen, refundolni
                 }
 
-                if(dbTraining.TrainerId != training.TrainerId)
+                foreach (Ticket incomingTicket in training.Tickets)
                 {
-                    if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff)) 
-                        return BadRequest("Az edzést nem adhatja át másnak.");
+                    if (incomingTicket.Id == 0)
+                    {
+                        dbTraining.Tickets.Add(new Ticket()
+                        {
+                            Description = incomingTicket.Description,
+                            IsStudent = incomingTicket.IsStudent,
+                            Price = incomingTicket.Price,
+                            Type = incomingTicket.Type,
+                            MaxUsage = 1,
+                            Tax_key = 27,
+                            IsActive = true
+                        });
+                }
+                    else
+                    {
+                        var existingDbTicket = dbTraining.Tickets.FirstOrDefault(db_t => db_t.Id == incomingTicket.Id && db_t.IsActive);
+                        if (existingDbTicket is not null)
+                        {
+                            existingDbTicket.Description = incomingTicket.Description;
+                            existingDbTicket.IsStudent = incomingTicket.IsStudent;
+                            existingDbTicket.Price = incomingTicket.Price;
+                            existingDbTicket.Type = incomingTicket.Type;
+                        }
+                    }
                 }
 
                 dbTraining.Name = training.Name;
@@ -227,6 +278,7 @@ namespace GymTracer.Controllers
                     training = new
                     {
                         dbTraining.Id,
+
                         dbTraining.Name,
                         dbTraining.Description,
                         dbTraining.Image,
@@ -239,8 +291,18 @@ namespace GymTracer.Controllers
                         {
                             dbTraining.Trainer.Id,
                             dbTraining.Trainer.Name
+                        },
+                        tickets = dbTraining.Tickets.Where(db_t => db_t.IsActive).Select(db_t => new
+                        {
+                            db_t.Id,
+                            db_t.Description,
+                            db_t.IsStudent,
+                            db_t.Price,
+                            db_t.Type,
+                            db_t.MaxUsage,
+                            db_t.IsActive
+                        })
                         }
-                    }
                 });
             });
         }
