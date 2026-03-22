@@ -413,6 +413,7 @@ namespace GymTracer.Controllers
 
             trainingValidator.Validate(t => t.Image, "edzés kép")
                 .NotNullOrEmpty();
+            // TODO: ellenőrizni valós kép-e
 
             trainingValidator.Validate(t => t.MaxParticipant, "résztvevő szám")
                 .GreaterThan(0ul)
