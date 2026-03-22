@@ -62,7 +62,7 @@ namespace GymTracer.Controllers
                         t.Trainer.Name
                     },
                     tickets = t.Tickets.Where(ticket => ticket.IsActive).Select(ticket => new
-                        {
+                    {
                         ticket.Id,
 
                         ticket.Description,
@@ -73,7 +73,7 @@ namespace GymTracer.Controllers
 
                         ticket.MaxUsage,
                         ticket.IsActive
-                        })
+                    })
                 }));
             });
         }
@@ -132,8 +132,8 @@ namespace GymTracer.Controllers
                         IsStudent = ticket.IsStudent,
                         Price = ticket.Price,
                         Type = ticket.Type,
-                            MaxUsage = 1,
-                            Tax_key = 27,
+                        MaxUsage = 1,
+                        Tax_key = 27,
                         IsActive = true
                     });
                 }
@@ -249,7 +249,7 @@ namespace GymTracer.Controllers
                             Tax_key = 27,
                             IsActive = true
                         });
-                }
+                    }
                     else
                     {
                         var existingDbTicket = dbTraining.Tickets.FirstOrDefault(db_t => db_t.Id == incomingTicket.Id && db_t.IsActive);
@@ -302,7 +302,7 @@ namespace GymTracer.Controllers
                             db_t.MaxUsage,
                             db_t.IsActive
                         })
-                        }
+                    }
                 });
             });
         }
@@ -329,6 +329,8 @@ namespace GymTracer.Controllers
                 }
 
                 dbTraining.Active = false;
+                // TODO: jegyek inaktiválása, és megnézni hogy ki lett-e fizetve valakinek, ha igen, refundolni
+
                 dbContext.SaveChanges();
 
                 return Ok(new
@@ -421,27 +423,25 @@ namespace GymTracer.Controllers
 
         [NonAction]
 
-        public Validator<ICollection<TrainingTicket>> ValidateTickets(ICollection<TrainingTicket> trainingTickets)
+        public Validator<ICollection<Ticket>> ValidateTickets(ICollection<Ticket> tickets)
         {
-            var trainingTicketsValidator = Validator.Create(trainingTickets);
-            trainingTicketsValidator.Validate(t => t, "TrainingTickets", "TrainingTickets")!
-                .ForEach(trainingTicket =>
-        {
-                    var TicketValidatorChain = trainingTicket.ThenValidate(tt => tt.Ticket, "jegy")
-                                                             .NotNull();
-
-                    TicketValidatorChain.ThenValidate(ticket => ticket.Description, "jegy leírás")
+            var ticketsValidator = Validator.Create(tickets);
+            ticketsValidator.Validate(t => t, "Ticket", "jegy")!
+                .NotNull()!
+                .ForEach(ticket =>
+                {
+                    ticket.ThenValidate(ticket => ticket.Description, "leírás")
                         .NotNullOrEmpty();
 
-                    TicketValidatorChain.ThenValidate(ticket => ticket.Price, "jegy ár")
+                    ticket.ThenValidate(ticket => ticket.Price, "ár")
                         .Min(0ul)
                         .Max(ulong.MaxValue);
 
-                    TicketValidatorChain.ThenValidate(ticket => ticket.Type, "jegy típus")
+                    ticket.ThenValidate(ticket => ticket.Type, "típus")
                         .InEnum();
                 });
 
-            return trainingTicketsValidator;
+            return ticketsValidator;
         }
     }
 }
