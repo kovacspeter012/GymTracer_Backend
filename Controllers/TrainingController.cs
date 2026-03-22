@@ -25,6 +25,79 @@ namespace GymTracer.Controllers
             this.tokenHandler = tokenHandler;
         }
 
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetAllTrainings(
+            [FromQuery] DateTime? start,
+            [FromQuery] DateTime? end,
+            [FromQuery] string? trainerName,
+            [FromQuery] long? trainerId,
+            [FromQuery] string? keyword)
+        {
+            return this.Run(() =>
+            {
+                var query = dbContext.Trainings
+                    .Include(t => t.Trainer)
+                    .Include(t => t.Tickets)
+                    .Where(t => t.Active);
+
+                if (!start.HasValue)
+                    start = tokenHandler.Now().Date;
+
+                if (!end.HasValue)
+                    end = start.Value.Date.AddDays(1)
+                                          .AddSeconds(-1);
+
+                query = query.Where(t => 
+                    t.StartTime >= start.Value && t.StartTime <= end.Value
+                );
+
+                if (trainerId.HasValue)
+                    query = query.Where(t => t.TrainerId == trainerId.Value);
+
+                if (!string.IsNullOrWhiteSpace(trainerName))
+                    query = query.Where(t => t.Trainer.Name.ToLower().Contains(trainerName.ToLower()));
+
+                if (!string.IsNullOrWhiteSpace(keyword))
+                    query = query.Where(t => t.Name.ToLower().Contains(keyword.ToLower()) ||
+                                             t.Description.ToLower().Contains(keyword.ToLower()));
+
+                var trainings = query
+                    .OrderBy(t => t.StartTime)
+                    .ToList();
+
+                return Ok(trainings.Select(t => new
+                {
+                    t.Id,
+                    t.Name,
+                    t.Description,
+                    t.Image,
+                    t.StartTime,
+                    t.EndTime,
+                    t.MaxParticipant,
+                    t.TrainerId,
+                    trainer = new
+                    {
+                        t.Trainer.Id,
+                        t.Trainer.Name
+                    },
+                    tickets = t.Tickets.Where(ticket => ticket.IsActive).Select(ticket => new
+                    {
+                        ticket.Id,
+
+                        ticket.Description,
+                        ticket.IsStudent,
+                        ticket.Type,
+                        ticket.Price,
+                        ticket.Tax_key,
+
+                        ticket.MaxUsage,
+                        ticket.IsActive
+                    })
+                }));
+            });
+        }
+
         [HttpGet("user/{id}")]
         public IActionResult GetTrainingsByTrainer(long id)
         {
