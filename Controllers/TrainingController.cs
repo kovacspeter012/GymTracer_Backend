@@ -116,31 +116,25 @@ namespace GymTracer.Controllers
                     MaxParticipant = training.MaxParticipant,
                     TrainerId = dbTrainer.Id,
                     Active = true,
-                    TrainingTickets = []
+                    Tickets = new List<Ticket>()
                 };
 
-                var TicketTrainingValidatorResult = ValidateTickets(training.TrainingTickets);
-                if (!TicketTrainingValidatorResult.IsValid)
-                    return BadRequest(new { TicketTrainingValidatorResult.Errors });
+                var TicketValidatorResult = ValidateTickets(training.Tickets);
+                if (!TicketValidatorResult.IsValid)
+                    return BadRequest(new { TicketValidatorResult.Errors });
 
                 // Training Ticketjeinek létrehozása (ha meg lettek adva)
-                foreach (TrainingTicket tt in training.TrainingTickets)
+                foreach (Ticket ticket in training.Tickets)
                 {
-                    if (tt.Ticket is null)
-                        continue;
-                    dbTraining.TrainingTickets.Add(new TrainingTicket()
+                    dbTraining.Tickets.Add(new Ticket()
                     {
-                        Training = dbTraining,
-                        Ticket = new Ticket()
-                        {
-                            Description = tt.Ticket.Description,
-                            IsStudent = tt.Ticket.IsStudent,
-                            Price = tt.Ticket.Price,
-                            Type = tt.Ticket.Type,
-
+                        Description = ticket.Description,
+                        IsStudent = ticket.IsStudent,
+                        Price = ticket.Price,
+                        Type = ticket.Type,
                             MaxUsage = 1,
                             Tax_key = 27,
-                        }
+                        IsActive = true
                     });
                 }
 
@@ -168,17 +162,18 @@ namespace GymTracer.Controllers
                             dbTrainer.Id,
                             dbTrainer.Name
                         },
-                        trainingTickets = dbTraining.TrainingTickets.Select(tt => new
+                        tickets = dbTraining.Tickets.Where(t => t.IsActive).Select(ticket => new
                         {
-                            ticket = new
-                            {
-                                tt.Ticket.Id,
-                                tt.Ticket.Description,
-                                tt.Ticket.IsStudent,
-                                tt.Ticket.Price,
-                                tt.Ticket.Type,
-                                tt.Ticket.MaxUsage
-                            }
+                            ticket.Id,
+
+                            ticket.Description,
+                            ticket.IsStudent,
+                            ticket.Type,
+                            ticket.Price,
+                            ticket.Tax_key,
+
+                            ticket.MaxUsage,
+                            ticket.IsActive
                         })
                     }
                 });
