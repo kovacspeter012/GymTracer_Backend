@@ -43,13 +43,8 @@ namespace GymTracer.Controllers
                     if(selectedUser is null)
                         return BadRequest("Nincs ilyen felhasználó!");
                 }
-                List<Training> trainings = 
-                    dbContext.Trainings.Include(t => t.Trainer)
-                                       .Include(t => t.TrainingTickets)
-                                       .ThenInclude(tt => tt.Ticket)
-                                       .Where(t => t.TrainerId == id && t.Active)
-                                       .OrderByDescending(t=> t.EndTime)
-                                       .ToList();
+                var trainings = dbContext.Trainings.Where(t => t.TrainerId == id && t.Active)
+                                                   .OrderByDescending(t => t.EndTime);
 
                 return Ok(trainings.Select(t => new
                 {
@@ -66,21 +61,18 @@ namespace GymTracer.Controllers
                         t.Trainer.Id,
                         t.Trainer.Name
                     },
-                    TrainingTickets = t.TrainingTickets
-                        .Select(tt => new
+                    tickets = t.Tickets.Where(ticket => ticket.IsActive).Select(ticket => new
                         {
-                            Ticket = new
-                            {
-                                tt.Ticket.Id,
+                        ticket.Id,
 
-                                tt.Ticket.Description,
-                                tt.Ticket.IsStudent,
-                                tt.Ticket.Type,
-                                tt.Ticket.Price,
+                        ticket.Description,
+                        ticket.IsStudent,
+                        ticket.Type,
+                        ticket.Price,
+                        ticket.Tax_key,
 
-                                tt.Ticket.Tax_key,
-                                tt.Ticket.MaxUsage,
-                            }
+                        ticket.MaxUsage,
+                        ticket.IsActive
                         })
                 }));
             });
