@@ -47,6 +47,8 @@ namespace GymTracer.Context
 
             modelBuilder.Entity<TrainingTicket>().HasIndex(t => new { t.TrainingId, t.TicketId }).IsUnique();
 
+            modelBuilder.Entity<Ticket>().Property(t => t.IsActive).HasDefaultValue(true);
+            modelBuilder.Entity<Ticket>().HasIndex(t => t.IsActive);
             modelBuilder.Entity<Ticket>().ToTable(t => t.HasCheckConstraint("Tax_key_positive", "\"Tax_key\" >= 0"));
 
             modelBuilder.Entity<UserTicket>().HasIndex(ut => ut.PaymentId).IsUnique();
