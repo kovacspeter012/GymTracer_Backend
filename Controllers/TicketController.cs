@@ -232,7 +232,7 @@ namespace GymTracer.Controllers
             });
         }
 
-        [HttpPatch("/user/{id}/pay/{payment_id}")]
+        [HttpPatch("user/{id}/pay/{payment_id}")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         public IActionResult PatchPayment(int id, int payment_id)
         {
