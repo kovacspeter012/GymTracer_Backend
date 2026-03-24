@@ -27,28 +27,32 @@ namespace GymTracer.Controllers
         [HttpGet]
         public IActionResult GetAllTickets()
         {
-            var tickets = DbContext.Set<Ticket>();
+            var tickets = DbContext.Set<Ticket>().Include(t => t.TrainingTickets);
 
-            return StatusCode(200, tickets.Select(t => new
+            var ticketsToBeReturned = tickets.Select(t => new
             {
                 t.Id,
                 t.Type,
                 t.Description,
                 t.IsStudent,
                 t.Price,
-                t.MaxUsage
-            }));
+                t.MaxUsage,
+                trainingId = t.TrainingTickets.FirstOrDefault(tt => tt.TicketId == t.Id) != null ? t.TrainingTickets.FirstOrDefault(tt => tt.TicketId == t.Id)!.TicketId : 0,
+                trainerName = t.TrainingTickets.FirstOrDefault(tt => tt.TicketId == t.Id) != null ? t.TrainingTickets.FirstOrDefault(tt => tt.TicketId == t.Id)!.Training.Name : ""
+            }).ToList();
+
+            return StatusCode(200, ticketsToBeReturned);
         }
 
         [HttpGet("user/{id}")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
-        public IActionResult GetTIcketsOfAUser(int id)
+        public IActionResult GetTicketsOfAUser(int id)
         {
             return this.Run(() =>
             {
                 if (IsAuthorized(id))
                 {
-                    var userTickets = DbContext.Set<UserTicket>().Where(u => u.UserId == id).Include(u => u.Ticket);
+                    var userTickets = DbContext.Set<UserTicket>().Where(u => u.UserId == id).Include(u => u.Ticket).Include(u => u.Ticket.TrainingTickets);
 
                     if (userTickets != null)
                     {
@@ -58,7 +62,9 @@ namespace GymTracer.Controllers
                             ut.Ticket.Description,
                             ut.Ticket.IsStudent,
                             ut.ExpirationDate,
-                            usagesLeft = ut.UsageAmount
+                            usagesLeft = ut.UsageAmount,
+                            trainingId = ut.Ticket.TrainingTickets.FirstOrDefault(tt => tt.TicketId == ut.Ticket.Id) != null ? ut.Ticket.TrainingTickets.FirstOrDefault(tt => tt.TicketId == ut.Ticket.Id)!.TicketId : 0,
+                            trainerName = ut.Ticket.TrainingTickets.FirstOrDefault(tt => tt.TicketId == ut.Ticket.Id) != null ? ut.Ticket.TrainingTickets.FirstOrDefault(tt => tt.TicketId == ut.Ticket.Id)!.Training.Name : ""
                         }));
                     }
                     else
@@ -110,14 +116,27 @@ namespace GymTracer.Controllers
 
         [HttpPost("{ticket_id}/user/{id}/{is_paid}")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
-        public IActionResult PostTicketAndPayment(int id, int ticket_id, bool is_paid)
+        public IActionResult PostTicketAndPayment(int id, int ticket_id, bool is_paid, bool calledFromOtherController = false, string issuerId = "")
         {
             return this.Run(() =>
             {
-                if (IsAuthorized(id))
+                if (IsAuthorized(id, calledFromOtherController))
                 {
                     using var transaction = DbContext.Database.BeginTransaction();
-                    var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    string loggedInUserId;
+                    try
+                    {
+                        loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+                    }
+                    catch
+                    {
+                        loggedInUserId = issuerId;
+                    }
+                    if (loggedInUserId == "")
+                    {
+                        throw new ApiException(400, "Issuer can not be identified");
+                    }
+
 
                     var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
 
@@ -150,7 +169,7 @@ namespace GymTracer.Controllers
                         newPayment = new Payment()
                         {
                             IssuerId = int.Parse(loggedInUserId!),
-                            DueDate = tokenHandler.Now().AddDays(7),
+                            DueDate = tokenHandler.Now().AddMonths(2),
                             PaymentDate = null,
                             TotalPrice = ticket.Price,
                             ReceiptNumber = "REC-" + nextRecipeNum.ToString()
@@ -213,7 +232,7 @@ namespace GymTracer.Controllers
             });
         }
 
-        [HttpPatch("/user/{id}/pay/{payment_id}")]
+        [HttpPatch("user/{id}/pay/{payment_id}")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         public IActionResult PatchPayment(int id, int payment_id)
         {
@@ -257,8 +276,12 @@ namespace GymTracer.Controllers
 
 
         [NonAction]
-        public bool IsAuthorized(int id)
+        public bool IsAuthorized(int id, bool skipLoggedInUserCheck = false)
         {
+            if (skipLoggedInUserCheck)
+            {
+                return true;
+            }
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var loggedInUser = DbContext.Set<User>().FirstOrDefault(u => u.Id.ToString() == loggedInUserId);

@@ -23,9 +23,9 @@ Backend végpontok
 - `GET` /api/ticket/user/{id}
 - `GET` /api/tickets/user/{id}/unpaid
 - `POST` /api/ticket/{ticket_id}/user/{id}/{is_paid}
-- `POST` /api/ticket/{ticket_id}/user/{id}/pay
+- `POST` /api/ticket/user/{id}/pay/{payment_id}
 
-- `GET` /api/training
+- `GET` /api/training (több paraméteres keresés)
 - `GET` /api/training/{training_id}
 - `GET` /api/user/{id}/training
 - `POST` /api/user/{id}/training/{training_id}
@@ -37,25 +37,22 @@ Backend végpontok
 - `POST` /api/training/user/{id}
 - `PUT` /api/training/{training_id}/user/{id}
 - `DELETE` /api/training/{training_id}/user/{id}
+- `GET` /api/training/{training_id}/users
 - `PUT` /api/training/{training_id}/user/{id}/attendance
 
 ## 4. Staff
 
-- `GET` /api/user (több paraméteres keresés??)
-- `GET` /api/statistic/gym
-- `GET` /api/statistic/user/{id}
-
+- `GET` /api/user (több paraméteres keresés)
+- `GET` /api/statistic/gym (napi adatok x napra visszamenően, heti adatok x hétre visszamenően)
 
 - Customer tevékenységek a nevükben
 
 ## 5. Admin
 
 - `PUT` /api/user/{id}/role
-- `GET` /api/payment
-- `GET` /api/payment/user/{id}
+- `GET` /api/statistic/tickets (jegy vételi statisztikák)
 
-- `GET` /api/statistic/gym (részletesebb)
-- `GET` /api/statistic/user/{id}/card
+- `GET` /api/statistic/card ()
 
 ## 6. Kapu
 
