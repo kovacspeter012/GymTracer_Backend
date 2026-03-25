@@ -54,6 +54,32 @@ namespace GymTracer.Controllers
                 return StatusCode(200, new { dayBackReturn, weekBackReturn });
             });
         }
+
+        [HttpGet("tickets")]
+        public IActionResult GetTicketsStatistics()
+        {
+            return this.Run(() =>
+            {
+                var groupedUserTickets = DbContext.Set<UserTicket>().GroupBy(ut => ut.TicketId).ToList();
+                var tickets = DbContext.Set<Ticket>().ToList();
+                var ticketStatistics = groupedUserTickets.Select(g => new
+                {
+                    soldAmount = g.Count(),
+                    ticket = tickets.AsEnumerable().Where(t => t.Id.ToString() == g.Key.ToString()).Select(t => new
+                    {
+                        t.Type,
+                        t.Description,
+                        t.IsStudent,
+                        t.Price,
+                        t.Tax_key,
+                        t.MaxUsage
+                    }).Single()
+                });
+
+                return StatusCode(200, ticketStatistics);
+            });
+        }
+
         [NonAction]
         public DateTime GetStartOfWeek(DateTime dt, DayOfWeek startOfWeek)
         {

@@ -420,7 +420,7 @@ namespace GymTracer.Controllers
 
         [HttpDelete("{id}/training/{training_id}")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
-        public IActionResult ApplyUserToTraining(int id, int training_id)
+        public IActionResult RemoveUserFromTraining(int id, int training_id)
         {
             return this.Run(() =>
             {
