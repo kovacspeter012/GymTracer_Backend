@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace GymTracer.Controllers
 {
-    [Authorize(Roles = nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TrainingController : ControllerBase
@@ -26,7 +26,6 @@ namespace GymTracer.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public IActionResult GetAllTrainings(
             [FromQuery] DateTime? start,
             [FromQuery] DateTime? end,
@@ -84,6 +83,7 @@ namespace GymTracer.Controllers
             });
         }
 
+        [Authorize(Roles = nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         [HttpGet("user/{id}")]
         public IActionResult GetTrainingsByTrainer(long id)
         {
@@ -124,7 +124,6 @@ namespace GymTracer.Controllers
             });
         }
 
-        [Authorize]
         [HttpGet("{training_id}")]
         // Trainer (ha övé az edzés), staff és admin megkapja a jelentkezett usereket is
         public IActionResult GetTrainingById(long training_id)
@@ -218,6 +217,7 @@ namespace GymTracer.Controllers
             });
         }
 
+        [Authorize(Roles = nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         [HttpPost("user/{id}")]
         public IActionResult CreateTraining(long id, [FromBody] dynamic body)
         {
@@ -318,6 +318,7 @@ namespace GymTracer.Controllers
             });
         }
 
+        [Authorize(Roles = nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         [HttpPut("{training_id}")]
         public IActionResult UpdateTraining([FromRoute] long training_id, [FromBody] dynamic body)
         {
@@ -444,6 +445,7 @@ namespace GymTracer.Controllers
             });
         }
 
+        [Authorize(Roles = nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         [HttpDelete("{training_id}")]
         public IActionResult DeleteTraining([FromRoute] long training_id)
         {
@@ -477,6 +479,7 @@ namespace GymTracer.Controllers
             });
         }
 
+        [Authorize(Roles = nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         [HttpPatch("{training_id}/user/{id}/presence")]
         public IActionResult SetTrainingPresence([FromRoute] long training_id, [FromRoute] long id, [FromBody] dynamic body)
         {
