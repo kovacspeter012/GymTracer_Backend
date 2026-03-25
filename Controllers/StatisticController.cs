@@ -5,6 +5,7 @@ using GymTracer.Extensions;
 using GymTracer.models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace GymTracer.Controllers
@@ -77,6 +78,24 @@ namespace GymTracer.Controllers
                 });
 
                 return StatusCode(200, ticketStatistics);
+            });
+        }
+
+        [HttpGet("card")]
+        public IActionResult GetCardUseageLogs()
+        {
+            return this.Run(() =>
+            {
+               var cardLogs = DbContext.Set<UsageLog>().Include(ul => ul.Card).Include(ul => ul.Card.User).OrderByDescending(ul => ul.UseDate).Select(ul => new
+               {
+                   ul.UseDate,
+                   cardId = ul.Card.Id,
+                   userId = ul.Card.User.Id,
+                   ul.Card.User.Name,
+                   ul.Card.User.Email
+               });
+
+                return StatusCode(200, cardLogs);
             });
         }
 
