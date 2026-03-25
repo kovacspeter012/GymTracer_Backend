@@ -373,7 +373,7 @@ namespace GymTracer.Controllers
                         throw new ApiException(400, "User already applied to this training");
                     }
 
-                    if (DbContext.Set<TrainingTicket>().Where(tt => tt.TicketId == ticket_id && tt.TrainingId == training_id).Single() != null)
+                    if (DbContext.Set<Ticket>().Where(t => t.Id == ticket_id && t.TrainingId == training_id).Single() != null)
                     {
                         var TicketController = new TicketController(DbContext,tokenHandler);
                         var retunedData = TicketController.PostTicketAndPayment(id, ticket_id, false, true, User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -420,19 +420,19 @@ namespace GymTracer.Controllers
 
         [HttpDelete("{id}/training/{training_id}")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
-        public IActionResult ApplyUserToTraining(int id, int training_id)
+        public IActionResult RemoveUserFromTraining(int id, long training_id)
         {
             return this.Run(() =>
             {
                 if (IsAuthorized(id))
                 {
                     var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
-                    var trainingtickets = DbContext.Set<TrainingTicket>().Where(u => u.TrainingId == training_id).ToList();
+                    var training = DbContext.Set<Ticket>().Where(u => u.TrainingId == training_id).ToList();
 
                     UserTicket? userticket = null;
-                    foreach (var ticket in trainingtickets)
+                    foreach (var ticket in training)
                     {
-                        var userTicketSearch = DbContext.Set<UserTicket>().Include(ut => ut.Payment).FirstOrDefault(ut => ut.TicketId == ticket.TicketId && ut.UserId == id);
+                        var userTicketSearch = DbContext.Set<UserTicket>().Include(ut => ut.Payment).FirstOrDefault(ut => ut.TicketId == ticket.Id && ut.UserId == id);
                         if (userTicketSearch != null)
                         {
                             userticket = userTicketSearch;
@@ -459,7 +459,7 @@ namespace GymTracer.Controllers
                     DbContext.Set<TrainingUser>().Remove(trainingUser);
                     DbContext.SaveChanges();
                     
-                    TrainingUser? userNextInQueueForTraining = DbContext.Set<TrainingUser>().Where(tu => tu.TrainingId == training_id && tu.OnWaitinglist == true).MinBy(tu => tu.ApplicationDate);
+                    TrainingUser? userNextInQueueForTraining = DbContext.Set<TrainingUser>().Where(tu => tu.TrainingId == training_id && tu.OnWaitinglist == true).OrderBy(tu => tu.ApplicationDate).SingleOrDefault();
                     if (userNextInQueueForTraining != null)
                     {
                         userNextInQueueForTraining.OnWaitinglist = false;
