@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -35,7 +36,12 @@ public partial class Ticket : ModelBase<Ticket>
 
     public ulong? MaxUsage { get; set; }
 
-    public virtual ICollection<TrainingTicket> TrainingTickets { get; set; } = new List<TrainingTicket>();
+    [Required]
+    public bool IsActive { get; set; } = true;
+
+    public long? TrainingId { get; set; }
+
+    public virtual Training? Training { get; set; } = null!;
 
     public virtual ICollection<UserTicket> UserTickets { get; set; } = new List<UserTicket>();
 }
