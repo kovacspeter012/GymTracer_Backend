@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -268,6 +269,289 @@ namespace GymTracer.Controllers
 
         }
 
+        [HttpGet("{id}/training")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult GetTrainingsOfUser(int id, [FromQuery] bool arePreviousNeeded)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    var trainingsOfUser = DbContext.Set<TrainingUser>().Include(tu => tu.Training).Include(tu =>tu.Training.Trainer).Where(tu => tu.UserId == id);
+                    if (arePreviousNeeded)
+                    {
+                        return StatusCode(200, trainingsOfUser.Select(tu => new
+                        {
+                            tu.Training.Name,
+                            tu.Training.Image,
+                            tu.Training.Description,
+                            tu.Training.StartTime,
+                            tu.Training.EndTime,
+                            tu.Training.MaxParticipant,
+                            tu.Training.Active,
+                            TrainerName = tu.Training.Trainer.Name,
+                            TrainerEmail = tu.Training.Trainer.Email,
+                            tu.ApplicationDate,
+                            tu.OnWaitinglist,
+                            tu.Presence,
+                        }));
+                    }
+                    else
+                    {
+                        return StatusCode(200, trainingsOfUser.Where(tu => tu.Training.EndTime > tokenHandler.Now()).Select(tu => new
+                        {
+                            tu.Training.Name,
+                            tu.Training.Image,
+                            tu.Training.Description,
+                            tu.Training.StartTime,
+                            tu.Training.EndTime,
+                            tu.Training.MaxParticipant,
+                            tu.Training.Active,
+                            TrainerName = tu.Training.Trainer.Name,
+                            TrainerEmail = tu.Training.Trainer.Email,
+                            tu.ApplicationDate,
+                            tu.OnWaitinglist,
+                            tu.Presence,
+                        }));
+                    }
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+
+            });
+
+        }
+
+        [HttpPost("{id}/training/{training_id}/{ticket_id}")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult ApplyUserToTraining(int id, int training_id, int ticket_id)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+                    var training = DbContext.Set<Training>().FirstOrDefault(u => u.Id == training_id && u.Active && u.EndTime < tokenHandler.Now());
+
+                    if (training == null)
+                    {
+                        throw new ApiException(400, "No training avaible with this id");
+                    }
+
+                    var userNumOnTraining = DbContext.Set<TrainingUser>().Where(tu => tu.TrainingId == training.Id && tu.OnWaitinglist == false).Count();
+
+                    TrainingUser newTrainingUser;
+
+                    if ((ulong)userNumOnTraining < training.MaxParticipant)
+                    {
+                        newTrainingUser = new TrainingUser()
+                        {
+                            TrainingId = training.Id,
+                            UserId = user!.Id,
+                            ApplicationDate = tokenHandler.Now(),
+                            OnWaitinglist = false,
+                            Presence = false,
+                        };
+                    }
+                    else
+                    {
+                        newTrainingUser = new TrainingUser()
+                        {
+                            TrainingId = training.Id,
+                            UserId = user!.Id,
+                            ApplicationDate = tokenHandler.Now(),
+                            OnWaitinglist = true,
+                            Presence = false,
+                        };
+                    }
+
+                    var trainingUser = DbContext.Set<TrainingUser>().FirstOrDefault(tu => tu.TrainingId == training_id && tu.UserId == id);
+                    if (trainingUser != null)
+                    {
+                        throw new ApiException(400, "User already applied to this training");
+                    }
+
+                    if (DbContext.Set<TrainingTicket>().Where(tt => tt.TicketId == ticket_id && tt.TrainingId == training_id).Single() != null)
+                    {
+                        var TicketController = new TicketController(DbContext,tokenHandler);
+                        var retunedData = TicketController.PostTicketAndPayment(id, ticket_id, false, true, User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                        if (retunedData is ObjectResult returnedObjectResult)
+                        {
+                            if (returnedObjectResult.StatusCode == 201)
+                            {
+                                //TODO: email küldése
+                                DbContext.Set<TrainingUser>().Add(newTrainingUser);
+                                DbContext.SaveChanges();
+                            }
+                            else
+                            {
+                                throw new ApiException(400, "Ticket creation unsuccessful");
+                            }
+                        }
+                        else
+                        {
+                            throw new ApiException(400, "No objectresult returned");
+                        }
+                    }
+                    else
+                    {
+                        throw new ApiException(400, "Incorrect ticket for training");
+                    }
+
+                    return StatusCode(201, new
+                    {
+                        newTrainingUser.TrainingId,
+                        newTrainingUser.UserId,
+                        newTrainingUser.ApplicationDate,
+                        newTrainingUser.OnWaitinglist,
+                        newTrainingUser.Presence
+                    });
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+
+            });
+
+        }
+
+        [HttpDelete("{id}/training/{training_id}")]
+        [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult ApplyUserToTraining(int id, int training_id)
+        {
+            return this.Run(() =>
+            {
+                if (IsAuthorized(id))
+                {
+                    var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+                    var trainingtickets = DbContext.Set<TrainingTicket>().Where(u => u.TrainingId == training_id).ToList();
+
+                    UserTicket? userticket = null;
+                    foreach (var ticket in trainingtickets)
+                    {
+                        var userTicketSearch = DbContext.Set<UserTicket>().Include(ut => ut.Payment).FirstOrDefault(ut => ut.TicketId == ticket.TicketId && ut.UserId == id);
+                        if (userTicketSearch != null)
+                        {
+                            userticket = userTicketSearch;
+                        }
+                    }
+                    if (userticket == null)
+                    {
+                        throw new ApiException(404, "No application to be deleted");
+                    }
+                    if (userticket.Payment.PaymentDate != null)
+                    {
+                        throw new ApiException(400, "Ticket was payed! No refound can be provided!");
+                    }
+
+                    var trainingUser = DbContext.Set<TrainingUser>().FirstOrDefault(tu => tu.UserId == id && tu.TrainingId == training_id);
+                    if (trainingUser == null)
+                    {
+                        throw new ApiException(404, "No application found");
+                    }
+                    
+                    using var transaction = DbContext.Database.BeginTransaction();
+                    DbContext.Set<Payment>().Remove(userticket.Payment);
+                    DbContext.Set<UserTicket>().Remove(userticket);
+                    DbContext.Set<TrainingUser>().Remove(trainingUser);
+                    DbContext.SaveChanges();
+                    
+                    TrainingUser? userNextInQueueForTraining = DbContext.Set<TrainingUser>().Where(tu => tu.TrainingId == training_id && tu.OnWaitinglist == true).MinBy(tu => tu.ApplicationDate);
+                    if (userNextInQueueForTraining != null)
+                    {
+                        userNextInQueueForTraining.OnWaitinglist = false;
+                        DbContext.Update(userNextInQueueForTraining);
+                        DbContext.SaveChanges();
+                    }
+                    transaction.Commit();
+
+                    return StatusCode(204, "Application successfully deleted");
+
+                }
+                else
+                {
+                    throw new ApiException(401, "Unauthorized");
+                }
+
+            });
+
+        }
+
+        [HttpGet("")]
+        [Authorize(Roles = nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
+        public IActionResult GetUserByParameter([FromQuery] string? name, [FromQuery] string? email)
+        {
+            return this.Run(() =>
+            {
+                List<User> users = [];
+                if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(email))
+                {
+                    return StatusCode(400, "At least one parameter requierd");
+                }
+                else if (string.IsNullOrEmpty(name))
+                {
+                    users = DbContext.Set<User>().Where(u => u.Email.Contains(email)).ToList();
+                }
+                else if (string.IsNullOrEmpty(email))
+                {
+                    users = DbContext.Set<User>().Where(u => u.Name.Contains(name)).ToList();
+                }
+                else
+                {
+                    throw new ApiException(400, "Bad request");
+                }
+
+                if (users.Count == 0)
+                {
+                    throw new ApiException(400, "No user found");
+                }
+
+                return StatusCode(200, users.Select(u => new
+                    {
+                        name = u.Name,
+                        email = u.Email,
+                        birthDate = u.BirthDate,
+                        creationDate = u.CreationDate,
+                    }
+                ));
+            });
+        }
+        
+        [HttpPut("{id}/role")]
+        [Authorize(Roles = nameof(User_Role.admin))]
+        public IActionResult ModifyRoleOfUser(int id, [FromBody] User_Role role)
+        {
+            return this.Run(() =>
+            {
+                var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                var loggedInUser = DbContext.Set<User>().FirstOrDefault(u => u.Id.ToString() == loggedInUserId);
+
+                var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
+
+                if (user != null)
+                {
+                    user.Role = role;
+                }
+                else
+                {
+                    throw new ApiException(400, "No user found");
+                }
+                if (loggedInUser!.Id == user.Id)
+                {
+                    throw new ApiException(400, "You can't modify your own role");
+                }
+
+                DbContext.Update(user);
+                DbContext.SaveChanges();
+
+                return StatusCode(200, "User role has been changed!");
+            });
+
+        }
         [NonAction]
         public bool IsAuthorized(int id)
         {
