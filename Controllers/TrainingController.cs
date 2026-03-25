@@ -151,6 +151,104 @@ namespace GymTracer.Controllers
             });
         }
 
+        [Authorize]
+        [HttpGet("{training_id}")]
+        // Trainer (ha övé az edzés), staff és admin megkapja a jelentkezett usereket is
+        public IActionResult GetTrainingById(long training_id)
+        {
+            return this.Run(() =>
+            {
+                string? userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                string? userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                var trainingQuery = dbContext.Trainings
+                    .Include(t => t.Trainer)
+                    .Include(t => t.Tickets)
+                    .AsQueryable();
+
+                bool includeUsers =
+                    userRole == nameof(User_Role.trainer) ||
+                    userRole == nameof(User_Role.staff) ||
+                    userRole == nameof(User_Role.admin);
+
+                if (includeUsers)
+                    trainingQuery = trainingQuery.Include(t => t.TrainingUsers)
+                                                 .ThenInclude(tu => tu.User);
+
+                Training? training = trainingQuery.FirstOrDefault(t => t.Id == training_id && t.Active);
+
+                if (training is null)
+                    return BadRequest("Nincs ilyen edzés!");
+
+                bool returnUsers = includeUsers &&
+                    (userRole != nameof(User_Role.trainer) || training.TrainerId.ToString() == userId);
+
+                var trainer = new
+                {
+                    training.Trainer.Id,
+                    training.Trainer.Name
+                };
+
+                var tickets = training.Tickets.Where(ticket => ticket.IsActive).Select(ticket => new
+                {
+                    ticket.Id,
+
+                    ticket.Description,
+                    ticket.IsStudent,
+                    ticket.Type,
+                    ticket.Price,
+                    ticket.Tax_key,
+
+                    ticket.MaxUsage,
+                    ticket.IsActive
+                });
+
+                if(returnUsers)
+                    return Ok(new
+                    {
+                        training.Id,
+
+                        training.Name,
+                        training.Description,
+                        training.Image,
+                        training.StartTime,
+                        training.EndTime,
+                        training.MaxParticipant,
+
+                        training.TrainerId,
+
+                        trainer,
+                        tickets,
+
+                        users = training.TrainingUsers.Select(tu => new
+                        {
+                            tu.User.Id,
+                            tu.User.Name,
+                            tu.OnWaitinglist,
+                            tu.Presence,
+                            tu.ApplicationDate
+                        })
+                    });
+
+                return Ok(new
+                {
+                    training.Id,
+
+                    training.Name,
+                    training.Description,
+                    training.Image,
+                    training.StartTime,
+                    training.EndTime,
+                    training.MaxParticipant,
+
+                    training.TrainerId,
+
+                    trainer,
+                    tickets,
+                });
+            });
+        }
+
         [HttpPost("user/{id}")]
         public IActionResult CreateTraining(long id, [FromBody] dynamic body)
         {
