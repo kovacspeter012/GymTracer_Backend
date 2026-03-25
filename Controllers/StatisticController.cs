@@ -29,12 +29,12 @@ namespace GymTracer.Controllers
             {
                 if (daysBack > 7)
                 {
-                    throw new ApiException(400, "only 7 days back statistic allowed at max");
+                    throw new ApiException(400, "Only 7 days back statistic allowed at max");
                 }
 
                 if (weeksBack > 4)
                 {
-                    throw new ApiException(400, "only 4 weeks back statistic allowed at max");
+                    throw new ApiException(400, "Only 4 weeks back statistic allowed at max");
                 }
 
                 List<UsageLog> dayByStatistics = DbContext.Set<UsageLog>().Where(ul => ul.UseDate < tokenHandler.Now() && ul.UseDate > tokenHandler.Now().AddDays(-daysBack)).ToList();
@@ -45,17 +45,20 @@ namespace GymTracer.Controllers
                 });
 
                 List<UsageLog> weekByStatistics = DbContext.Set<UsageLog>().Where(ul => ul.UseDate < tokenHandler.Now() && ul.UseDate > tokenHandler.Now().AddDays(-weeksBack * 7)).ToList();
-                var weekBackReturn = weekByStatistics.GroupBy(s => new {Year = ISOWeek.GetYear(s.UseDate), Week = ISOWeek.GetWeekOfYear(s.UseDate)}).Select(g => new
+                var weekBackReturn = weekByStatistics.GroupBy(s => GetStartOfWeek(s.UseDate, DayOfWeek.Monday)).Select(g => new
                 {
-                    year = g.Key.Year,
-                    weekOfYear = g.Key.Week,
+                    startOfWeek = g.Key,
                     guestNumber = g.Count()
                 });
 
                 return StatusCode(200, new { dayBackReturn, weekBackReturn });
             });
-            
-
+        }
+        [NonAction]
+        public DateTime GetStartOfWeek(DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.Date.AddDays(-1 * diff);
         }
     }
 }
