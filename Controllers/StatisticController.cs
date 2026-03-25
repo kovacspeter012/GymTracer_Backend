@@ -3,6 +3,7 @@ using GymTracer.Context;
 using GymTracer.Exceptions;
 using GymTracer.Extensions;
 using GymTracer.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace GymTracer.Controllers
         }
 
         [HttpGet("gym")]
+        [Authorize(Roles = nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         public IActionResult GetAttendanceStatistics([FromQuery] uint daysBack, [FromQuery] uint weeksBack)
         {
             return this.Run(() =>
@@ -57,6 +59,7 @@ namespace GymTracer.Controllers
         }
 
         [HttpGet("tickets")]
+        [Authorize(Roles = nameof(User_Role.admin))]
         public IActionResult GetTicketsStatistics()
         {
             return this.Run(() =>
@@ -82,6 +85,7 @@ namespace GymTracer.Controllers
         }
 
         [HttpGet("card")]
+        [Authorize(Roles = nameof(User_Role.admin))]
         public IActionResult GetCardUseageLogs()
         {
             return this.Run(() =>
