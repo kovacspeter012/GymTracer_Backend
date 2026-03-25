@@ -3,6 +3,7 @@ using System;
 using GymTracer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymTracer.Migrations
 {
     [DbContext(typeof(GymTracerDbContext))]
-    partial class GymTracerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260322121446_TicketIsActive")]
+    partial class TicketIsActive
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -271,17 +274,12 @@ namespace GymTracer.Migrations
                     b.Property<decimal>("Tax_key")
                         .HasColumnType("decimal(5, 2) unsigned");
 
-                    b.Property<long?>("TrainingId")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IsActive");
-
-                    b.HasIndex("TrainingId");
 
                     b.ToTable("Tickets", t =>
                         {
@@ -356,241 +354,23 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 7L,
-                            Description = "Standard Training Ticket - Yoga Basics",
+                            Description = "Standard Training Ticket",
                             IsActive = true,
                             IsStudent = false,
                             MaxUsage = 1ul,
                             Price = 6000ul,
                             Tax_key = 27.00m,
-                            TrainingId = 1L,
                             Type = 0
                         },
                         new
                         {
                             Id = 8L,
-                            Description = "Student Training Ticket - Yoga Basics",
+                            Description = "Student Training Ticket",
                             IsActive = true,
                             IsStudent = true,
                             MaxUsage = 1ul,
                             Price = 3000ul,
                             Tax_key = 27.00m,
-                            TrainingId = 1L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 9L,
-                            Description = "Standard Training Ticket - HIIT Blast",
-                            IsActive = true,
-                            IsStudent = false,
-                            MaxUsage = 1ul,
-                            Price = 6000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 2L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 10L,
-                            Description = "Student Training Ticket - HIIT Blast",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 1ul,
-                            Price = 3000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 2L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 11L,
-                            Description = "Standard Training Ticket - Pilates Core",
-                            IsActive = true,
-                            IsStudent = false,
-                            MaxUsage = 1ul,
-                            Price = 6000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 3L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 12L,
-                            Description = "Student Training Ticket - Pilates Core",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 1ul,
-                            Price = 3000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 3L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 13L,
-                            Description = "Standard Training Ticket - Zumba",
-                            IsActive = true,
-                            IsStudent = false,
-                            MaxUsage = 1ul,
-                            Price = 6000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 4L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 14L,
-                            Description = "Student Training Ticket - Zumba",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 1ul,
-                            Price = 3000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 4L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 15L,
-                            Description = "Standard Training Ticket - CrossFit",
-                            IsActive = true,
-                            IsStudent = false,
-                            MaxUsage = 1ul,
-                            Price = 6000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 5L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 16L,
-                            Description = "Student Training Ticket - CrossFit",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 1ul,
-                            Price = 3000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 5L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 17L,
-                            Description = "Standard Training Ticket - Spin Class",
-                            IsActive = true,
-                            IsStudent = false,
-                            MaxUsage = 1ul,
-                            Price = 6000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 6L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 18L,
-                            Description = "Student Training Ticket - Spin Class",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 1ul,
-                            Price = 3000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 6L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 19L,
-                            Description = "Standard Training Ticket - Boxing",
-                            IsActive = true,
-                            IsStudent = false,
-                            MaxUsage = 1ul,
-                            Price = 6000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 7L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 20L,
-                            Description = "Student Training Ticket - Boxing",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 1ul,
-                            Price = 3000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 7L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 21L,
-                            Description = "Standard Training Ticket - Stretching",
-                            IsActive = true,
-                            IsStudent = false,
-                            MaxUsage = 1ul,
-                            Price = 6000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 8L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 22L,
-                            Description = "Student Training Ticket - Stretching",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 1ul,
-                            Price = 3000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 8L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 23L,
-                            Description = "Standard Training Ticket - Powerlifting",
-                            IsActive = true,
-                            IsStudent = false,
-                            MaxUsage = 1ul,
-                            Price = 6000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 9L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 24L,
-                            Description = "Student Training Ticket - Powerlifting",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 1ul,
-                            Price = 3000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 9L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 25L,
-                            Description = "Standard Training Ticket - Aqua Aerobics",
-                            IsActive = true,
-                            IsStudent = false,
-                            MaxUsage = 1ul,
-                            Price = 6000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 10L,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 26L,
-                            Description = "Student Training Ticket - Aqua Aerobics",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 1ul,
-                            Price = 3000ul,
-                            Tax_key = 27.00m,
-                            TrainingId = 10L,
                             Type = 0
                         });
                 });
@@ -744,6 +524,12 @@ namespace GymTracer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EndTime")
+                        .IsUnique();
+
+                    b.HasIndex("StartTime")
+                        .IsUnique();
+
                     b.HasIndex("TrainerId");
 
                     b.ToTable("Trainings");
@@ -868,6 +654,150 @@ namespace GymTracer.Migrations
                             Name = "Aqua Aerobics",
                             StartTime = new DateTime(2023, 5, 8, 9, 0, 0, 0, DateTimeKind.Utc),
                             TrainerId = 6L
+                        });
+                });
+
+            modelBuilder.Entity("GymTracer.models.TrainingTicket", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TicketId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TrainingId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("TrainingId", "TicketId")
+                        .IsUnique();
+
+                    b.ToTable("TrainingTickets");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            TicketId = 7L,
+                            TrainingId = 1L
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            TicketId = 7L,
+                            TrainingId = 2L
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            TicketId = 7L,
+                            TrainingId = 3L
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            TicketId = 7L,
+                            TrainingId = 4L
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            TicketId = 7L,
+                            TrainingId = 5L
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            TicketId = 7L,
+                            TrainingId = 6L
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            TicketId = 7L,
+                            TrainingId = 7L
+                        },
+                        new
+                        {
+                            Id = 8L,
+                            TicketId = 7L,
+                            TrainingId = 8L
+                        },
+                        new
+                        {
+                            Id = 9L,
+                            TicketId = 7L,
+                            TrainingId = 9L
+                        },
+                        new
+                        {
+                            Id = 10L,
+                            TicketId = 7L,
+                            TrainingId = 10L
+                        },
+                        new
+                        {
+                            Id = 11L,
+                            TicketId = 8L,
+                            TrainingId = 1L
+                        },
+                        new
+                        {
+                            Id = 12L,
+                            TicketId = 8L,
+                            TrainingId = 2L
+                        },
+                        new
+                        {
+                            Id = 13L,
+                            TicketId = 8L,
+                            TrainingId = 3L
+                        },
+                        new
+                        {
+                            Id = 14L,
+                            TicketId = 8L,
+                            TrainingId = 4L
+                        },
+                        new
+                        {
+                            Id = 15L,
+                            TicketId = 8L,
+                            TrainingId = 5L
+                        },
+                        new
+                        {
+                            Id = 16L,
+                            TicketId = 8L,
+                            TrainingId = 6L
+                        },
+                        new
+                        {
+                            Id = 17L,
+                            TicketId = 8L,
+                            TrainingId = 7L
+                        },
+                        new
+                        {
+                            Id = 18L,
+                            TicketId = 8L,
+                            TrainingId = 8L
+                        },
+                        new
+                        {
+                            Id = 19L,
+                            TicketId = 8L,
+                            TrainingId = 9L
+                        },
+                        new
+                        {
+                            Id = 20L,
+                            TicketId = 8L,
+                            TrainingId = 10L
                         });
                 });
 
@@ -1423,15 +1353,6 @@ namespace GymTracer.Migrations
                     b.Navigation("Issuer");
                 });
 
-            modelBuilder.Entity("GymTracer.models.Ticket", b =>
-                {
-                    b.HasOne("GymTracer.models.Training", "Training")
-                        .WithMany("Tickets")
-                        .HasForeignKey("TrainingId");
-
-                    b.Navigation("Training");
-                });
-
             modelBuilder.Entity("GymTracer.models.Token", b =>
                 {
                     b.HasOne("GymTracer.models.User", "User")
@@ -1452,6 +1373,25 @@ namespace GymTracer.Migrations
                         .IsRequired();
 
                     b.Navigation("Trainer");
+                });
+
+            modelBuilder.Entity("GymTracer.models.TrainingTicket", b =>
+                {
+                    b.HasOne("GymTracer.models.Ticket", "Ticket")
+                        .WithMany("TrainingTickets")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GymTracer.models.Training", "Training")
+                        .WithMany("TrainingTickets")
+                        .HasForeignKey("TrainingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+
+                    b.Navigation("Training");
                 });
 
             modelBuilder.Entity("GymTracer.models.TrainingUser", b =>
@@ -1523,12 +1463,14 @@ namespace GymTracer.Migrations
 
             modelBuilder.Entity("GymTracer.models.Ticket", b =>
                 {
+                    b.Navigation("TrainingTickets");
+
                     b.Navigation("UserTickets");
                 });
 
             modelBuilder.Entity("GymTracer.models.Training", b =>
                 {
-                    b.Navigation("Tickets");
+                    b.Navigation("TrainingTickets");
 
                     b.Navigation("TrainingUsers");
                 });

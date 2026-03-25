@@ -36,7 +36,7 @@ public partial class Training : ModelBase<Training>
 
     public virtual User Trainer { get; set; } = null!;
 
-    public virtual ICollection<TrainingTicket> TrainingTickets { get; set; } = new List<TrainingTicket>();
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
     public virtual ICollection<TrainingUser> TrainingUsers { get; set; } = new List<TrainingUser>();
 }
