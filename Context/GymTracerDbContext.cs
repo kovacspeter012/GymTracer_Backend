@@ -33,9 +33,6 @@ namespace GymTracer.Context
         {
             modelBuilder.Entity<User>().HasIndex(user => user.Email).IsUnique();
 
-            modelBuilder.Entity<Training>().HasIndex(training => training.StartTime).IsUnique();
-            modelBuilder.Entity<Training>().HasIndex(training => training.EndTime).IsUnique();
-
             modelBuilder.Entity<Payment>().HasIndex(payment => payment.ReceiptNumber).IsUnique();
 
             modelBuilder.Entity<Token>().HasIndex(token => token.TokenString).IsUnique();
