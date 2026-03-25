@@ -54,11 +54,11 @@ namespace GymTracer.Controllers
                     query = query.Where(t => t.TrainerId == trainerId.Value);
 
                 if (!string.IsNullOrWhiteSpace(trainerName))
-                    query = query.Where(t => t.Trainer.Name.ToLower().Contains(trainerName.ToLower()));
+                    query = query.Where(t => t.Trainer.Name.Contains(trainerName));
 
                 if (!string.IsNullOrWhiteSpace(keyword))
-                    query = query.Where(t => t.Name.ToLower().Contains(keyword.ToLower()) ||
-                                             t.Description.ToLower().Contains(keyword.ToLower()));
+                    query = query.Where(t => t.Name.Contains(keyword) ||
+                                             t.Description.Contains(keyword));
 
                 var trainings = query
                     .OrderBy(t => t.StartTime)
