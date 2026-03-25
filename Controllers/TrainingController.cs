@@ -38,7 +38,6 @@ namespace GymTracer.Controllers
             {
                 var query = dbContext.Trainings
                     .Include(t => t.Trainer)
-                    .Include(t => t.Tickets)
                     .Where(t => t.Active);
 
                 if (!start.HasValue)
@@ -69,31 +68,18 @@ namespace GymTracer.Controllers
                 return Ok(trainings.Select(t => new
                 {
                     t.Id,
+
                     t.Name,
-                    t.Description,
                     t.Image,
                     t.StartTime,
                     t.EndTime,
                     t.MaxParticipant,
-                    t.TrainerId,
+
                     trainer = new
                     {
                         t.Trainer.Id,
                         t.Trainer.Name
-                    },
-                    tickets = t.Tickets.Where(ticket => ticket.IsActive).Select(ticket => new
-                    {
-                        ticket.Id,
-
-                        ticket.Description,
-                        ticket.IsStudent,
-                        ticket.Type,
-                        ticket.Price,
-                        ticket.Tax_key,
-
-                        ticket.MaxUsage,
-                        ticket.IsActive
-                    })
+                    }
                 }));
             });
         }
@@ -122,31 +108,18 @@ namespace GymTracer.Controllers
                 return Ok(trainings.Select(t => new
                 {
                     t.Id,
+
                     t.Name,
-                    t.Description,
                     t.Image,
                     t.StartTime,
                     t.EndTime,
                     t.MaxParticipant,
-                    t.TrainerId,
+
                     trainer = new
                     {
                         t.Trainer.Id,
                         t.Trainer.Name
-                    },
-                    tickets = t.Tickets.Where(ticket => ticket.IsActive).Select(ticket => new
-                    {
-                        ticket.Id,
-
-                        ticket.Description,
-                        ticket.IsStudent,
-                        ticket.Type,
-                        ticket.Price,
-                        ticket.Tax_key,
-
-                        ticket.MaxUsage,
-                        ticket.IsActive
-                    })
+                    }
                 }));
             });
         }
