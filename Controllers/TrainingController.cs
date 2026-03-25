@@ -562,13 +562,13 @@ namespace GymTracer.Controllers
 
             trainingValidator.Validate(t => t.StartTime, "edzés kezdete")
                 .NotDefault()
-                .After(DateTime.UtcNow)
-                .Before(DateTime.UtcNow.AddMonths(1));
+                .After(tokenHandler.Now())
+                .Before(tokenHandler.Now().AddMonths(1));
 
             trainingValidator.Validate(t => t.EndTime, "edzés vége")
                 .NotDefault()
                 .After(training.StartTime)
-                .Before(DateTime.UtcNow.AddMonths(1));
+                .Before(tokenHandler.Now().AddMonths(1));
 
             // Edzés hossza
             trainingValidator.Validate(t =>
