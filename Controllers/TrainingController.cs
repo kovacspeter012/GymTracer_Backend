@@ -188,8 +188,6 @@ namespace GymTracer.Controllers
                         training.EndTime,
                         training.MaxParticipant,
 
-                        training.TrainerId,
-
                         trainer,
                         tickets,
 
@@ -213,8 +211,6 @@ namespace GymTracer.Controllers
                     training.StartTime,
                     training.EndTime,
                     training.MaxParticipant,
-
-                    training.TrainerId,
 
                     trainer,
                     tickets,
@@ -298,8 +294,6 @@ namespace GymTracer.Controllers
                         dbTraining.StartTime,
                         dbTraining.EndTime,
                         dbTraining.MaxParticipant,
-
-                        dbTraining.TrainerId,
 
                         trainer = new
                         {
@@ -430,7 +424,6 @@ namespace GymTracer.Controllers
                         dbTraining.EndTime,
                         dbTraining.MaxParticipant,
 
-                        dbTraining.TrainerId,
                         trainer = new
                         {
                             dbTraining.Trainer.Id,
