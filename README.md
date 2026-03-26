@@ -55,4 +55,4 @@ Backend végpontok
 
 ## 6. Kapu
 
-- `POST` /api/card/{card_code}/use (??)
+- `POST` /api/gate/{gate_id}/card/{card_code}/enter
