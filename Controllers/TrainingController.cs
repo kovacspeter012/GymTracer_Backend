@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace GymTracer.Controllers
 {
-    [Authorize]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class TrainingController : ControllerBase
@@ -69,6 +69,7 @@ namespace GymTracer.Controllers
                     t.Id,
 
                     t.Name,
+                    t.Description,
                     t.Image,
                     t.StartTime,
                     t.EndTime,
@@ -110,6 +111,7 @@ namespace GymTracer.Controllers
                     t.Id,
 
                     t.Name,
+                    t.Description,
                     t.Image,
                     t.StartTime,
                     t.EndTime,
@@ -124,6 +126,7 @@ namespace GymTracer.Controllers
             });
         }
 
+        [Authorize]
         [HttpGet("{training_id}")]
         // Trainer (ha övé az edzés), staff és admin megkapja a jelentkezett usereket is
         public IActionResult GetTrainingById(long training_id)
