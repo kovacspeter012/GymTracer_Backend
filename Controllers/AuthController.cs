@@ -94,7 +94,7 @@ namespace GymTracer.Controllers
                         id = dbUser.Id,
                         name = dbUser.Name,
                         email = dbUser.Email,
-                        role = dbUser.Role.ToString(),
+                        role = dbUser.Role,
                     },
                     token = tokenString,
                     validTo = revokedAt,

@@ -28,7 +28,7 @@ Backend végpontok
 - `GET` /api/training (több paraméteres keresés)
 - `GET` /api/training/{training_id}
 - `GET` /api/user/{id}/training
-- `POST` /api/user/{id}/training/{training_id}
+- `POST` /api/user/{id}/training/{training_id}/ticket/{ticket_id}
 - `DELETE` /api/user/{id}/training/{training_id}
 
 ## 3. Trainer tevékenység

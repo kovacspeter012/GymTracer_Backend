@@ -27,21 +27,24 @@ namespace GymTracer.Controllers
         [HttpGet]
         public IActionResult GetAllTickets()
         {
-            var tickets = DbContext.Set<Ticket>().Include(t => t.Training);
-
-            var ticketsToBeReturned = tickets.Select(t => new
+            return this.Run(() =>
             {
-                t.Id,
-                t.Type,
-                t.Description,
-                t.IsStudent,
-                t.Price,
-                t.MaxUsage,
-                trainingId = t.Training == null ? null : t.TrainingId!,
-                trainerName = t.Training == null ? null : t.Training.Name!
-            }).ToList();
+                var tickets = DbContext.Set<Ticket>().Include(t => t.Training);
 
-            return StatusCode(200, ticketsToBeReturned);
+                var ticketsToBeReturned = tickets.Select(t => new
+                {
+                    t.Id,
+                    t.Type,
+                    t.Description,
+                    t.IsStudent,
+                    t.Price,
+                    t.MaxUsage,
+                    trainingId = t.Training == null ? null : t.TrainingId!,
+                    trainerName = t.Training == null ? null : t.Training.Name!
+                }).ToList();
+
+                return StatusCode(200, ticketsToBeReturned);
+            });
         }
 
         [HttpGet("user/{id}")]

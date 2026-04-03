@@ -27,7 +27,7 @@ namespace GymTracer
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   policy =>
                                   {
-                                      policy.WithOrigins("http://localhost:4200")
+                                      policy.WithOrigins("http://localhost:4200") // TODO: kubernetes frontend project ip hozzáadása
                                             .AllowAnyHeader()
                                             .AllowAnyMethod();
                                   });

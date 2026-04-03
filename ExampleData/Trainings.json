@@ -101,9 +101,9 @@
   {
     "Id": 10,
     "TrainerId": 6,
-    "Name": "Aqua Aerobics",
-    "Description": "Pool workout",
-    "Image": "aqua.jpg",
+    "Name": "Aerobics",
+    "Description": "Aerobic workout",
+    "Image": "aerobics.jpg",
     "StartTime": "2023-05-08T09:00:00Z",
     "EndTime": "2023-05-08T10:00:00Z",
     "MaxParticipant": 15,
