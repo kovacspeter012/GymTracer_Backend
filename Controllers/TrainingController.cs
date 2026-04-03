@@ -150,10 +150,20 @@ namespace GymTracer.Controllers
                     trainingQuery = trainingQuery.Include(t => t.TrainingUsers)
                                                  .ThenInclude(tu => tu.User);
 
-                Training? training = trainingQuery.FirstOrDefault(t => t.Id == training_id && t.Active);
+                Training? training = trainingQuery
+                    .AsSplitQuery()
+                    .FirstOrDefault(t => t.Id == training_id && t.Active);
 
                 if (training is null)
                     return BadRequest("Nincs ilyen edzés!");
+
+                bool isApplied = false;
+                if (long.TryParse(userId, out long parsedUserId))
+                {
+                    isApplied = dbContext.TrainingUsers.Any(tu =>
+                        tu.TrainingId == training_id &&
+                        tu.UserId == parsedUserId);
+                }
 
                 bool returnUsers = includeUsers &&
                     (userRole != nameof(User_Role.trainer) || training.TrainerId.ToString() == userId);
@@ -184,6 +194,8 @@ namespace GymTracer.Controllers
                         training.Id,
 
                         training.Name,
+
+                        isApplied,
                         training.Description,
                         training.Image,
                         training.StartTime,
@@ -208,6 +220,8 @@ namespace GymTracer.Controllers
                     training.Id,
 
                     training.Name,
+
+                    isApplied,
                     training.Description,
                     training.Image,
                     training.StartTime,
