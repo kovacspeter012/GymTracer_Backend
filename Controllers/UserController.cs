@@ -333,7 +333,12 @@ namespace GymTracer.Controllers
                 if (IsAuthorized(id))
                 {
                     var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
-                    var training = DbContext.Set<Training>().FirstOrDefault(u => u.Id == training_id && u.Active && u.EndTime < tokenHandler.Now());
+                    if (user == null)
+                    {
+                        throw new ApiException(400, "User not found");
+                    }
+
+                    var training = DbContext.Set<Training>().FirstOrDefault(u => u.Id == training_id && u.Active && u.EndTime >= tokenHandler.Now());
 
                     if (training == null)
                     {
@@ -342,30 +347,16 @@ namespace GymTracer.Controllers
 
                     var userNumOnTraining = DbContext.Set<TrainingUser>().Where(tu => tu.TrainingId == training.Id && tu.OnWaitinglist == false).Count();
 
-                    TrainingUser newTrainingUser;
+                    bool onWaitingList = (ulong)userNumOnTraining >= training.MaxParticipant;
 
-                    if ((ulong)userNumOnTraining < training.MaxParticipant)
+                    TrainingUser newTrainingUser = new TrainingUser()
                     {
-                        newTrainingUser = new TrainingUser()
-                        {
-                            TrainingId = training.Id,
-                            UserId = user!.Id,
-                            ApplicationDate = tokenHandler.Now(),
-                            OnWaitinglist = false,
-                            Presence = false,
-                        };
-                    }
-                    else
-                    {
-                        newTrainingUser = new TrainingUser()
-                        {
-                            TrainingId = training.Id,
-                            UserId = user!.Id,
-                            ApplicationDate = tokenHandler.Now(),
-                            OnWaitinglist = true,
-                            Presence = false,
-                        };
-                    }
+                        TrainingId = training.Id,
+                        UserId = user!.Id,
+                        ApplicationDate = tokenHandler.Now(),
+                        OnWaitinglist = onWaitingList,
+                        Presence = false,
+                    };
 
                     var trainingUser = DbContext.Set<TrainingUser>().FirstOrDefault(tu => tu.TrainingId == training_id && tu.UserId == id);
                     if (trainingUser != null)
@@ -373,7 +364,7 @@ namespace GymTracer.Controllers
                         throw new ApiException(400, "User already applied to this training");
                     }
 
-                    if (DbContext.Set<Ticket>().Where(t => t.Id == ticket_id && t.TrainingId == training_id).Single() != null)
+                    if (DbContext.Set<Ticket>().Where(t => t.Id == ticket_id && t.TrainingId == training_id).SingleOrDefault() != null)
                     {
                         var TicketController = new TicketController(DbContext,tokenHandler);
                         var retunedData = TicketController.PostTicketAndPayment(id, ticket_id, false, true, User.FindFirstValue(ClaimTypes.NameIdentifier)!);
