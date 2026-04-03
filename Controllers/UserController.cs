@@ -324,7 +324,7 @@ namespace GymTracer.Controllers
 
         }
 
-        [HttpPost("{id}/training/{training_id}/{ticket_id}")]
+        [HttpPost("{id}/training/{training_id}/ticket/{ticket_id}")]
         [Authorize(Roles = nameof(User_Role.customer) + "," + nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
         public IActionResult ApplyUserToTraining(int id, int training_id, int ticket_id)
         {
