@@ -31,7 +31,7 @@ namespace GymTracer.Controllers
             {
                 var tickets = DbContext.Set<Ticket>().Include(t => t.Training);
 
-                var ticketsToBeReturned = tickets.Select(t => new
+                var ticketsToBeReturned = tickets.Where(t => t.Training == null || t.Training.Active && t.Training.EndTime > tokenHandler.Now()).Select(t => new
                 {
                     t.Id,
                     t.Type,
@@ -40,7 +40,7 @@ namespace GymTracer.Controllers
                     t.Price,
                     t.MaxUsage,
                     trainingId = t.Training == null ? null : t.TrainingId!,
-                    trainerName = t.Training == null ? null : t.Training.Name!
+                    trainingName = t.Training == null ? null : t.Training.Name!
                 }).ToList();
 
                 return StatusCode(200, ticketsToBeReturned);
@@ -55,24 +55,50 @@ namespace GymTracer.Controllers
             {
                 if (IsAuthorized(id))
                 {
-                    var userTickets = DbContext.Set<UserTicket>().Where(u => u.UserId == id).Include(u => u.Ticket).Include(u => u.Ticket.Training);
+                    var userTickets = DbContext.Set<UserTicket>().Where(u => u.UserId == id && u.ExpirationDate > tokenHandler.Now()).Include(u => u.Ticket).Include(u => u.Ticket.Training).Include(u => u.Payment);
+
+                    List<UserTicket> validTickets = [];
+
+                    foreach (var userTicket in userTickets)
+                    {
+                        switch (userTicket.Ticket.Type)
+                        {
+                            case Ticket_Type.training:
+                            case Ticket_Type.daily:
+                            case Ticket_Type.x_usage:
+                                if (userTicket.Ticket.MaxUsage - userTicket.UsageAmount > 0)
+                                {
+                                    validTickets.Add(userTicket);
+                                }
+                                break;
+                            case Ticket_Type.monthly:
+                                if (userTicket.ExpirationDate > tokenHandler.Now())
+                                {
+                                    validTickets.Add(userTicket);
+                                }
+                                break;
+                        }
+                    }
 
                     if (userTickets != null)
                     {
-                        return StatusCode(200, userTickets.Select(ut => new
+                        return StatusCode(200, validTickets.Select(ut => new
                         {
                             ut.Ticket.Type,
                             ut.Ticket.Description,
                             ut.Ticket.IsStudent,
                             ut.ExpirationDate,
-                            usagesLeft = ut.UsageAmount,
+                            price = ut.Payment.TotalPrice,
+                            paymentId = ut.PaymentId,
+                            isPayed = ut.Payment.PaymentDate != null,
+                            usagesLeft = ut.Ticket.MaxUsage - ut.UsageAmount,
                             trainingId = ut.Ticket.Training == null ? null : ut.Ticket.TrainingId!,
-                            trainerName = ut.Ticket.Training == null ? null : ut.Ticket.Training.Name!
+                            trainingName = ut.Ticket.Training == null ? null : ut.Ticket.Training.Name!
                         }));
                     }
                     else
                     {
-                        throw new ApiException(404, "No card found");
+                        throw new ApiException(404, "No ticket found");
                     }
                 }
                 else
