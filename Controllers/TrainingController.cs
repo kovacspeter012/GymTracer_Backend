@@ -540,6 +540,9 @@ namespace GymTracer.Controllers
                         return BadRequest("Csak saját edzéséhez állíthatja az emberek jelenlétét!");
                 }
 
+                if(dbTraining.EndTime.AddDays(2 * 7) <= tokenHandler.Now())
+                    return BadRequest("A részvételi adatok az edzést követő két hétben módosíthatóak csak!");
+
                 TrainingUser? dbTrainingUser = dbTraining.TrainingUsers.FirstOrDefault(t => t.UserId == id);
                 if (dbTrainingUser is null) 
                     return BadRequest("Ez a felhasználó nincs regisztrálva erre az edzésre!");
