@@ -497,8 +497,8 @@ namespace GymTracer.Controllers
         }
 
         [Authorize(Roles = nameof(User_Role.trainer) + "," + nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
-        [HttpPatch("{training_id}/user/{id}/presence")]
-        public IActionResult SetTrainingPresence([FromRoute] long training_id, [FromRoute] long id, [FromBody] dynamic body)
+        [HttpPatch("{training_id}/user/{id}/presence/{presence}")]
+        public IActionResult SetTrainingPresence([FromRoute] long training_id, [FromRoute] long id, [FromRoute] bool presence)
         {
             return this.Run(() =>
             {
@@ -514,11 +514,6 @@ namespace GymTracer.Controllers
                 if (dbTraining is null)
                     return BadRequest("Nincs ilyen edzés!");
 
-                bool? presence = body.presence;
-
-                if(presence is null)
-                    return BadRequest("A részvétel megadása kötelező!");
-
                 if (userId != dbTraining.TrainerId.ToString())
                 {
                     if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
@@ -529,7 +524,7 @@ namespace GymTracer.Controllers
                 if (dbTrainingUser is null) 
                     return BadRequest("Ez a felhasználó nincs regisztrálva erre az edzésre!");
 
-                dbTrainingUser.Presence = presence.Value;
+                dbTrainingUser.Presence = presence;
                 dbContext.SaveChanges();
 
                 return Ok(new{ 
