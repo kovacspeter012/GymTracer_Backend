@@ -377,6 +377,9 @@ namespace GymTracer.Controllers
                 if (training.TrainerId == 0)
                     training.TrainerId = dbTraining.TrainerId;
 
+                if (dbTraining.StartTime <= tokenHandler.Now())
+                    return BadRequest("A már megkezdett vagy befejeződött edzéseket nem lehet szerkeszteni!");
+
                 if (dbTraining.TrainerId != training.TrainerId)
                     if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
                         return BadRequest("Az edzést nem adhatja át másnak.");
@@ -497,6 +500,9 @@ namespace GymTracer.Controllers
                     if (userRole != nameof(User_Role.admin) && userRole != nameof(User_Role.staff))
                         return BadRequest("Csak saját nevében törölheti az edzést!");
                 }
+
+                if (dbTraining.StartTime <= tokenHandler.Now())
+                    return BadRequest("A már megkezdett vagy befejeződött edzéseket nem lehet törölni!");
 
                 dbTraining.Active = false;
                 // TODO: jegyek inaktiválása, és megnézni hogy ki lett-e fizetve valakinek, ha igen, refundolni
