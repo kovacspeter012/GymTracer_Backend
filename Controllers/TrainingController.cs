@@ -557,7 +557,7 @@ namespace GymTracer.Controllers
 
             trainingValidator.Validate(t => t.StartTime, "edzés kezdete")
                 .NotDefault()
-                .After(tokenHandler.Now())
+                .After(tokenHandler.Now().AddMinutes(-1)) // "azonnal induló" edzésnek puffer idő
                 .Before(tokenHandler.Now().AddMonths(1));
 
             trainingValidator.Validate(t => t.EndTime, "edzés vége")
