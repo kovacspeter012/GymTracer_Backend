@@ -121,7 +121,21 @@ namespace GymTracer.Controllers
                     {
                         t.Trainer.Id,
                         t.Trainer.Name
-                    }
+                    },
+
+                    tickets = t.Tickets.Where(t => t.IsActive).Select(ticket => new
+                    {
+                        ticket.Id,
+
+                        ticket.Description,
+                        ticket.IsStudent,
+                        ticket.Type,
+                        ticket.Price,
+                        ticket.Tax_key,
+
+                        ticket.MaxUsage,
+                        ticket.IsActive
+                    })
                 }));
             });
         }
