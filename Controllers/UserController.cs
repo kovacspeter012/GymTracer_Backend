@@ -466,34 +466,23 @@ namespace GymTracer.Controllers
 
         [HttpGet("")]
         [Authorize(Roles = nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
-        public IActionResult GetUserByParameter([FromQuery] string? name, [FromQuery] string? email)
+        public IActionResult GetUserByParameter([FromQuery] string? name, [FromQuery] string? email, [FromQuery] string? guid)
         {
             return this.Run(() =>
             {
-                List<User> users = [];
-                if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(email))
-                {
+                IQueryable<User> usersQuery = DbContext.Users.AsQueryable();
+
+                if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(email) && string.IsNullOrEmpty(guid))
                     return StatusCode(400, "At least one parameter requierd");
-                }
-                else if (string.IsNullOrEmpty(name))
-                {
-                    users = DbContext.Set<User>().Where(u => u.Email.Contains(email)).ToList();
-                }
-                else if (string.IsNullOrEmpty(email))
-                {
-                    users = DbContext.Set<User>().Where(u => u.Name.Contains(name)).ToList();
-                }
-                else
-                {
-                    throw new ApiException(400, "Bad request");
-                }
 
-                if (users.Count == 0)
-                {
-                    throw new ApiException(400, "No user found");
-                }
+                if (!string.IsNullOrEmpty(name))
+                    usersQuery = usersQuery.Where(u => u.Name.Contains(name));
+                if (!string.IsNullOrEmpty(email))
+                    usersQuery = usersQuery.Where(u => u.Email.Contains(email));
+                if (!string.IsNullOrEmpty(guid))
+                    usersQuery = usersQuery.Where(u => u.Cards.Any(c => c.Code.ToString() == guid));
 
-                return StatusCode(200, users.Select(u => new
+                return StatusCode(200, usersQuery.Select(u => new
                     {
                         id = u.Id,
                         name = u.Name,
