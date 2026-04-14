@@ -453,7 +453,7 @@
     {
         "Id": 42,
         "Type": 1,
-        "Description": "Napijegy",
+        "Description": "Napijegy Diák",
         "IsStudent": 1,
         "Price": 1250,
         "Tax_key": 27.00,
@@ -464,7 +464,7 @@
     {
         "Id": 43,
         "Type": 2,
-        "Description": "Havi bérlet",
+        "Description": "Havi bérlet Diák",
         "IsStudent": 1,
         "Price": 9000,
         "Tax_key": 27.00,
@@ -475,7 +475,7 @@
     {
         "Id": 44,
         "Type": 3,
-        "Description": "10 alkalmas bérlet",
+        "Description": "10 alkalmas bérlet Diák",
         "IsStudent": 1,
         "Price": 11000,
         "Tax_key": 27.00,

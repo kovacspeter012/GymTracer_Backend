@@ -23,9 +23,9 @@ namespace GymTracer.Migrations
                 columns: new[] { "Id", "Description", "IsActive", "IsStudent", "MaxUsage", "Price", "Tax_key", "TrainingId", "Type" },
                 values: new object[,]
                 {
-                    { 42L, "Napijegy", true, true, 1ul, 1250ul, 27.00m, null, 1 },
-                    { 43L, "Havi bérlet", true, true, null, 9000ul, 27.00m, null, 2 },
-                    { 44L, "10 alkalmas bérlet", true, true, 10ul, 11000ul, 27.00m, null, 3 }
+                    { 42L, "Napijegy Diák", true, true, 1ul, 1250ul, 27.00m, null, 1 },
+                    { 43L, "Havi bérlet Diák", true, true, null, 9000ul, 27.00m, null, 2 },
+                    { 44L, "10 alkalmas bérlet Diák", true, true, 10ul, 11000ul, 27.00m, null, 3 }
                 });
 
             migrationBuilder.UpdateData(
