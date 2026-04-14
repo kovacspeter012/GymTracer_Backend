@@ -3,6 +3,7 @@ using System;
 using GymTracer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymTracer.Migrations
 {
     [DbContext(typeof(GymTracerDbContext))]
-    partial class GymTracerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414143810_newdatafix2")]
+    partial class newdatafix2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -819,7 +822,7 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 42L,
-                            Description = "Napijegy Diák",
+                            Description = "Napijegy",
                             IsActive = true,
                             IsStudent = true,
                             MaxUsage = 1ul,
@@ -830,7 +833,7 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 43L,
-                            Description = "Havi bérlet Diák",
+                            Description = "Havi bérlet",
                             IsActive = true,
                             IsStudent = true,
                             Price = 9000ul,
@@ -840,7 +843,7 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 44L,
-                            Description = "10 alkalmas bérlet Diák",
+                            Description = "10 alkalmas bérlet",
                             IsActive = true,
                             IsStudent = true,
                             MaxUsage = 10ul,
