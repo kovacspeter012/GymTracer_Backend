@@ -3,6 +3,7 @@ using System;
 using GymTracer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymTracer.Migrations
 {
     [DbContext(typeof(GymTracerDbContext))]
-    partial class GymTracerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414135027_newdata")]
+    partial class newdata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,13 +83,6 @@ namespace GymTracer.Migrations
                             Id = 5L,
                             Code = new Guid("ae25016a-edd0-4e2a-85cf-5fb04f53a005"),
                             CreatedAt = new DateTime(2026, 5, 1, 12, 20, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 12L
-                        },
-                        new
-                        {
-                            Id = 6L,
-                            Code = new Guid("ae25016a-edd0-4e2a-85cf-5fb04f53a999"),
-                            CreatedAt = new DateTime(2026, 5, 1, 12, 30, 0, 0, DateTimeKind.Unspecified),
                             UserId = 12L
                         },
                         new
@@ -819,34 +815,26 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 42L,
-                            Description = "Napijegy",
+                            Description = "Személyi edzés Jegy",
                             IsActive = true,
-                            IsStudent = true,
+                            IsStudent = false,
                             MaxUsage = 1ul,
-                            Price = 1250ul,
+                            Price = 5000ul,
                             Tax_key = 27.00m,
-                            Type = 1
+                            TrainingId = 20L,
+                            Type = 0
                         },
                         new
                         {
                             Id = 43L,
-                            Description = "Havi bérlet",
+                            Description = "Személyi edzés Diák",
                             IsActive = true,
                             IsStudent = true,
-                            Price = 9000ul,
+                            MaxUsage = 1ul,
+                            Price = 4000ul,
                             Tax_key = 27.00m,
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 44L,
-                            Description = "10 alkalmas bérlet",
-                            IsActive = true,
-                            IsStudent = true,
-                            MaxUsage = 10ul,
-                            Price = 11000ul,
-                            Tax_key = 27.00m,
-                            Type = 3
+                            TrainingId = 20L,
+                            Type = 0
                         });
                 });
 
@@ -1247,6 +1235,18 @@ namespace GymTracer.Migrations
                             Name = "Spinning 2",
                             StartTime = new DateTime(2026, 6, 20, 19, 0, 0, 0, DateTimeKind.Unspecified),
                             TrainerId = 6L
+                        },
+                        new
+                        {
+                            Id = 20L,
+                            Active = true,
+                            Description = "Nyílt nap a személyi edzésre",
+                            EndTime = new DateTime(2026, 6, 25, 19, 0, 0, 0, DateTimeKind.Unspecified),
+                            Image = "pt.jpg",
+                            MaxParticipant = 5ul,
+                            Name = "Személyi edzés Demo",
+                            StartTime = new DateTime(2026, 6, 25, 18, 0, 0, 0, DateTimeKind.Unspecified),
+                            TrainerId = 7L
                         });
                 });
 
@@ -1407,702 +1407,79 @@ namespace GymTracer.Migrations
                         new
                         {
                             Id = 1L,
-                            CardId = 3L,
+                            CardId = 1L,
                             Gate = 1,
-                            UseDate = new DateTime(2026, 5, 1, 7, 15, 0, 0, DateTimeKind.Unspecified)
+                            UseDate = new DateTime(2026, 5, 1, 14, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2L,
-                            CardId = 8L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 1, 8, 30, 0, 0, DateTimeKind.Unspecified)
+                            CardId = 2L,
+                            Gate = 1,
+                            UseDate = new DateTime(2026, 5, 1, 14, 5, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3L,
-                            CardId = 12L,
+                            CardId = 3L,
                             Gate = 2,
-                            UseDate = new DateTime(2026, 5, 1, 10, 5, 0, 0, DateTimeKind.Unspecified)
+                            UseDate = new DateTime(2026, 5, 1, 14, 15, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 4L,
-                            CardId = 5L,
+                            CardId = 4L,
                             Gate = 1,
-                            UseDate = new DateTime(2026, 5, 2, 16, 45, 0, 0, DateTimeKind.Unspecified)
+                            UseDate = new DateTime(2026, 5, 1, 14, 20, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 5L,
-                            CardId = 1L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 2, 17, 20, 0, 0, DateTimeKind.Unspecified)
+                            CardId = 5L,
+                            Gate = 2,
+                            UseDate = new DateTime(2026, 5, 1, 14, 30, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 6L,
-                            CardId = 9L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 3, 9, 10, 0, 0, DateTimeKind.Unspecified)
+                            CardId = 1L,
+                            Gate = 3,
+                            UseDate = new DateTime(2026, 5, 1, 15, 30, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 7L,
                             CardId = 2L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 3, 11, 55, 0, 0, DateTimeKind.Unspecified)
+                            Gate = 3,
+                            UseDate = new DateTime(2026, 5, 1, 15, 45, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 8L,
-                            CardId = 13L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 4, 6, 30, 0, 0, DateTimeKind.Unspecified)
+                            CardId = 3L,
+                            Gate = 4,
+                            UseDate = new DateTime(2026, 5, 1, 16, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 9L,
-                            CardId = 7L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 4, 18, 15, 0, 0, DateTimeKind.Unspecified)
+                            CardId = 6L,
+                            Gate = 1,
+                            UseDate = new DateTime(2026, 5, 1, 16, 15, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 10L,
-                            CardId = 4L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 5, 8, 40, 0, 0, DateTimeKind.Unspecified)
+                            CardId = 7L,
+                            Gate = 2,
+                            UseDate = new DateTime(2026, 5, 1, 16, 30, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 11L,
-                            CardId = 11L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 5, 19, 5, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 12L,
-                            CardId = 6L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 6, 14, 20, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 13L,
-                            CardId = 10L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 6, 15, 35, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 14L,
-                            CardId = 8L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 7, 7, 50, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 15L,
-                            CardId = 3L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 7, 12, 10, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 16L,
-                            CardId = 1L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 8, 9, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 17L,
-                            CardId = 5L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 8, 16, 25, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 18L,
-                            CardId = 12L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 9, 10, 15, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 19L,
-                            CardId = 2L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 9, 11, 45, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 20L,
-                            CardId = 9L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 10, 8, 30, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 21L,
-                            CardId = 13L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 10, 17, 10, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 22L,
-                            CardId = 7L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 11, 19, 20, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 23L,
-                            CardId = 4L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 11, 20, 5, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 24L,
-                            CardId = 11L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 12, 7, 45, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 25L,
-                            CardId = 6L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 12, 15, 30, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 26L,
-                            CardId = 10L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 13, 16, 15, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 27L,
-                            CardId = 8L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 13, 18, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 28L,
-                            CardId = 3L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 14, 9, 25, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 29L,
-                            CardId = 1L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 14, 10, 50, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 30L,
-                            CardId = 5L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 15, 8, 10, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 31L,
-                            CardId = 12L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 15, 12, 35, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 32L,
-                            CardId = 2L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 16, 14, 40, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 33L,
-                            CardId = 9L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 16, 17, 55, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 34L,
-                            CardId = 13L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 17, 11, 20, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 35L,
-                            CardId = 7L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 17, 18, 30, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 36L,
-                            CardId = 4L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 18, 7, 5, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 37L,
-                            CardId = 11L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 18, 9, 15, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 38L,
-                            CardId = 6L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 19, 16, 45, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 39L,
-                            CardId = 10L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 19, 19, 50, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 40L,
                             CardId = 8L,
                             Gate = 1,
-                            UseDate = new DateTime(2026, 5, 20, 8, 25, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 41L,
-                            CardId = 3L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 20, 11, 10, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 42L,
-                            CardId = 1L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 21, 15, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 43L,
-                            CardId = 5L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 21, 17, 35, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 44L,
-                            CardId = 12L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 22, 6, 40, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 45L,
-                            CardId = 2L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 22, 9, 55, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 46L,
-                            CardId = 9L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 23, 14, 20, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 47L,
-                            CardId = 13L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 23, 18, 15, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 48L,
-                            CardId = 7L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 24, 10, 30, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 49L,
-                            CardId = 4L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 24, 12, 45, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 50L,
-                            CardId = 11L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 25, 8, 5, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 51L,
-                            CardId = 6L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 25, 16, 10, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 52L,
-                            CardId = 10L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 26, 19, 25, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 53L,
-                            CardId = 8L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 26, 20, 40, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 54L,
-                            CardId = 3L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 27, 7, 15, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 55L,
-                            CardId = 1L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 27, 11, 50, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 56L,
-                            CardId = 5L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 28, 15, 35, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 57L,
-                            CardId = 12L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 28, 18, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 58L,
-                            CardId = 2L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 29, 9, 20, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 59L,
-                            CardId = 9L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 29, 13, 45, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 60L,
-                            CardId = 13L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 30, 8, 10, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 61L,
-                            CardId = 7L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 5, 30, 10, 25, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 62L,
-                            CardId = 4L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 5, 31, 16, 55, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 63L,
-                            CardId = 11L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 5, 31, 19, 10, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 64L,
-                            CardId = 6L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 1, 7, 30, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 65L,
-                            CardId = 10L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 1, 12, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 66L,
-                            CardId = 8L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 2, 15, 45, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 67L,
-                            CardId = 3L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 2, 18, 20, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 68L,
-                            CardId = 1L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 3, 9, 15, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 69L,
-                            CardId = 5L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 3, 11, 40, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 70L,
-                            CardId = 12L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 4, 16, 5, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 71L,
-                            CardId = 2L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 4, 19, 50, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 72L,
-                            CardId = 9L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 5, 8, 25, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 73L,
-                            CardId = 13L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 5, 14, 10, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 74L,
-                            CardId = 7L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 6, 17, 35, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 75L,
-                            CardId = 4L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 6, 20, 15, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 76L,
-                            CardId = 11L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 7, 7, 45, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 77L,
-                            CardId = 6L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 7, 10, 30, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 78L,
-                            CardId = 10L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 8, 15, 55, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 79L,
-                            CardId = 8L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 8, 18, 40, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 80L,
-                            CardId = 3L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 9, 9, 20, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 81L,
-                            CardId = 1L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 9, 12, 5, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 82L,
-                            CardId = 5L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 10, 16, 30, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 83L,
-                            CardId = 12L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 10, 19, 15, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 84L,
-                            CardId = 2L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 11, 8, 50, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 85L,
-                            CardId = 9L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 11, 11, 35, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 86L,
-                            CardId = 13L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 12, 15, 20, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 87L,
-                            CardId = 7L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 12, 18, 5, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 88L,
-                            CardId = 4L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 13, 9, 40, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 89L,
-                            CardId = 11L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 14, 14, 25, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 90L,
-                            CardId = 6L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 15, 17, 10, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 91L,
-                            CardId = 10L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 16, 19, 55, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 92L,
-                            CardId = 8L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 17, 8, 30, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 93L,
-                            CardId = 3L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 18, 11, 15, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 94L,
-                            CardId = 1L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 19, 15, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 95L,
-                            CardId = 5L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 20, 18, 45, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 96L,
-                            CardId = 12L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 22, 9, 20, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 97L,
-                            CardId = 2L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 24, 12, 5, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 98L,
-                            CardId = 9L,
-                            Gate = 0,
-                            UseDate = new DateTime(2026, 6, 26, 16, 50, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 99L,
-                            CardId = 13L,
-                            Gate = 2,
-                            UseDate = new DateTime(2026, 6, 28, 19, 35, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 100L,
-                            CardId = 7L,
-                            Gate = 1,
-                            UseDate = new DateTime(2026, 6, 30, 8, 10, 0, 0, DateTimeKind.Unspecified)
+                            UseDate = new DateTime(2026, 5, 1, 16, 45, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
@@ -2155,7 +1532,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gym.hu",
                             Name = "Adminisztrátor Anna",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "admin123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 3
                         },
                         new
@@ -2166,7 +1543,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ricsi.staff@gym.hu",
                             Name = "Recepciós Ricsi",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "ricsistaff1230000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 2
                         },
                         new
@@ -2177,7 +1554,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "elemer.edzo@gym.hu",
                             Name = "Edző Elemér",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "elemeredzo1230000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 1
                         },
                         new
@@ -2188,7 +1565,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "eszter.edzo@gym.hu",
                             Name = "Edző Eszter",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "eszteredzo1230000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 1
                         },
                         new
@@ -2199,7 +1576,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "erik.edzo@gym.hu",
                             Name = "Edző Erik",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "erikedzo123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 1
                         },
                         new
@@ -2210,7 +1587,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "edit.edzo@gym.hu",
                             Name = "Edző Edit",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "editedzo123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 1
                         },
                         new
@@ -2221,7 +1598,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "endre.edzo@gym.hu",
                             Name = "Edző Endre",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "endreedzo12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 1
                         },
                         new
@@ -2232,7 +1609,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 9, 15, 0, 0, DateTimeKind.Unspecified),
                             Email = "janos.kovacs@gmail.com",
                             Name = "Kovács János",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "janos.kovacs12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2243,7 +1620,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 9, 20, 0, 0, DateTimeKind.Unspecified),
                             Email = "anna.nagy@gmail.com",
                             Name = "Nagy Anna",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "anna.nagy12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2254,7 +1631,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 9, 30, 0, 0, DateTimeKind.Unspecified),
                             Email = "peter.szabo@gmail.com",
                             Name = "Szabó Péter",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "peter.szabo12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2265,7 +1642,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 9, 40, 0, 0, DateTimeKind.Unspecified),
                             Email = "maria.toth@gmail.com",
                             Name = "Tóth Mária",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "maria.toth123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2276,7 +1653,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 9, 45, 0, 0, DateTimeKind.Unspecified),
                             Email = "laszlo.kiss@gmail.com",
                             Name = "Kiss László",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "laszlo.kiss12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2287,7 +1664,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 9, 50, 0, 0, DateTimeKind.Unspecified),
                             Email = "eva.varga@gmail.com",
                             Name = "Varga Éva",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "eva.varga1230000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2298,7 +1675,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 9, 55, 0, 0, DateTimeKind.Unspecified),
                             Email = "gabor.molnar@gmail.com",
                             Name = "Molnár Gábor",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "gabor.molnar123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2309,7 +1686,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "judit.farkas@gmail.com",
                             Name = "Farkas Judit",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "judit.farkas123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2320,7 +1697,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 10, 0, 0, DateTimeKind.Unspecified),
                             Email = "zoltan.balogh@gmail.com",
                             Name = "Balogh Zoltán",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "zoltan.balogh12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2331,7 +1708,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 15, 0, 0, DateTimeKind.Unspecified),
                             Email = "andrea.papp@gmail.com",
                             Name = "Papp Andrea",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "andrea.papp1230000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2342,7 +1719,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 20, 0, 0, DateTimeKind.Unspecified),
                             Email = "miklos.takacs@gmail.com",
                             Name = "Takács Miklós",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "miklos.takacs12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2353,7 +1730,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 25, 0, 0, DateTimeKind.Unspecified),
                             Email = "katalin.juhasz@gmail.com",
                             Name = "Juhász Katalin",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "katalin.juhasz1230000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2364,7 +1741,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 30, 0, 0, DateTimeKind.Unspecified),
                             Email = "csaba.lakatos@gmail.com",
                             Name = "Lakatos Csaba",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "csaba.lakatos12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2375,7 +1752,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 35, 0, 0, DateTimeKind.Unspecified),
                             Email = "krisztina.meszaros@gmail.com",
                             Name = "Mészáros Krisztina",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "krisztinameszaros123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2386,7 +1763,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 40, 0, 0, DateTimeKind.Unspecified),
                             Email = "attila.simon@gmail.com",
                             Name = "Simon Attila",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "attila.simon12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2397,7 +1774,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 45, 0, 0, DateTimeKind.Unspecified),
                             Email = "agnes.fekete@gmail.com",
                             Name = "Fekete Ágnes",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "agnes.fekete12300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2408,7 +1785,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 50, 0, 0, DateTimeKind.Unspecified),
                             Email = "zsolt.toth@gmail.com",
                             Name = "Tóth Zsolt",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "zsolt.toth123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2419,7 +1796,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 10, 55, 0, 0, DateTimeKind.Unspecified),
                             Email = "ildiko.szilagyi@gmail.com",
                             Name = "Szilágyi Ildikó",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "ildiko.szilagyi123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2430,7 +1807,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 11, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "balazs.torok@gmail.com",
                             Name = "Török Balázs",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "balazs.torok1230000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2441,7 +1818,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 11, 5, 0, 0, DateTimeKind.Unspecified),
                             Email = "dora.feher@gmail.com",
                             Name = "Fehér Dóra",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "dora.feher123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2452,7 +1829,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 11, 10, 0, 0, DateTimeKind.Unspecified),
                             Email = "tamas.racz@gmail.com",
                             Name = "Rácz Tamás",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "tamas.racz123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2463,7 +1840,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 11, 15, 0, 0, DateTimeKind.Unspecified),
                             Email = "viktoria.kis@gmail.com",
                             Name = "Kis Viktória",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "viktoria.kis123000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         },
                         new
@@ -2474,7 +1851,7 @@ namespace GymTracer.Migrations
                             CreationDate = new DateTime(2026, 5, 1, 11, 20, 0, 0, DateTimeKind.Unspecified),
                             Email = "gergo.gal@gmail.com",
                             Name = "Gál Gergő",
-                            Password = "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+                            Password = "gergo.gal1230000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                             Role = 0
                         });
                 });
