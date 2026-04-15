@@ -36,23 +36,14 @@ namespace GymTracer.Controllers
                 {
                     var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
 
-                    var cardOfUser = DbContext.Set<Card>().Where(c => c.UserId == user!.Id);
-                    List<long> cardsIds = [];
-                    foreach (var c in cardOfUser)
-                    {
-                        cardsIds.Add(c.Id);
-                    }
+                    var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == user!.Id);
 
                     return StatusCode(200, new
                     {
-                        user = new
-                        {
                             name = user!.Name,
                             email = user.Email,
                             birthDate = user.BirthDate,
                             creationDate = user.CreationDate,
-                            cards = cardsIds,
-                        }
                     });
                 }
                 else
@@ -178,14 +169,15 @@ namespace GymTracer.Controllers
                 {
                     var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
 
-                    var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == user!.Id && c.RevokedAt == null).ToList();
+                    var cardsOfUser = DbContext.Set<Card>().Include(c => c.UsageLogs).Where(c => c.UserId == user!.Id && c.RevokedAt == null).ToList();
 
                     if (cardsOfUser.Count != 0)
                     {
                         return StatusCode(200, cardsOfUser.Select(c => new
                         {
                             c.Id,
-                            c.Code
+                            c.Code,
+                            c.CreatedAt,
                         }));
                     }
                     else
@@ -223,7 +215,8 @@ namespace GymTracer.Controllers
                     return StatusCode(200, card.Select(c => new
                     {
                         c.Id,
-                        c.Code
+                        c.Code,
+                        c.CreatedAt
                     }));
                     
                 }
@@ -333,7 +326,12 @@ namespace GymTracer.Controllers
                 if (IsAuthorized(id))
                 {
                     var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
-                    var training = DbContext.Set<Training>().FirstOrDefault(u => u.Id == training_id && u.Active && u.EndTime < tokenHandler.Now());
+                    if (user == null)
+                    {
+                        throw new ApiException(400, "User not found");
+                    }
+
+                    var training = DbContext.Set<Training>().FirstOrDefault(u => u.Id == training_id && u.Active && u.EndTime >= tokenHandler.Now());
 
                     if (training == null)
                     {
@@ -342,30 +340,16 @@ namespace GymTracer.Controllers
 
                     var userNumOnTraining = DbContext.Set<TrainingUser>().Where(tu => tu.TrainingId == training.Id && tu.OnWaitinglist == false).Count();
 
-                    TrainingUser newTrainingUser;
+                    bool onWaitingList = (ulong)userNumOnTraining >= training.MaxParticipant;
 
-                    if ((ulong)userNumOnTraining < training.MaxParticipant)
+                    TrainingUser newTrainingUser = new TrainingUser()
                     {
-                        newTrainingUser = new TrainingUser()
-                        {
-                            TrainingId = training.Id,
-                            UserId = user!.Id,
-                            ApplicationDate = tokenHandler.Now(),
-                            OnWaitinglist = false,
-                            Presence = false,
-                        };
-                    }
-                    else
-                    {
-                        newTrainingUser = new TrainingUser()
-                        {
-                            TrainingId = training.Id,
-                            UserId = user!.Id,
-                            ApplicationDate = tokenHandler.Now(),
-                            OnWaitinglist = true,
-                            Presence = false,
-                        };
-                    }
+                        TrainingId = training.Id,
+                        UserId = user!.Id,
+                        ApplicationDate = tokenHandler.Now(),
+                        OnWaitinglist = onWaitingList,
+                        Presence = false,
+                    };
 
                     var trainingUser = DbContext.Set<TrainingUser>().FirstOrDefault(tu => tu.TrainingId == training_id && tu.UserId == id);
                     if (trainingUser != null)
@@ -373,7 +357,7 @@ namespace GymTracer.Controllers
                         throw new ApiException(400, "User already applied to this training");
                     }
 
-                    if (DbContext.Set<Ticket>().Where(t => t.Id == ticket_id && t.TrainingId == training_id).Single() != null)
+                    if (DbContext.Set<Ticket>().Where(t => t.Id == ticket_id && t.TrainingId == training_id).SingleOrDefault() != null)
                     {
                         var TicketController = new TicketController(DbContext,tokenHandler);
                         var retunedData = TicketController.PostTicketAndPayment(id, ticket_id, false, true, User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -482,39 +466,30 @@ namespace GymTracer.Controllers
 
         [HttpGet("")]
         [Authorize(Roles = nameof(User_Role.staff) + "," + nameof(User_Role.admin))]
-        public IActionResult GetUserByParameter([FromQuery] string? name, [FromQuery] string? email)
+        public IActionResult GetUserByParameter([FromQuery] string? name, [FromQuery] string? email, [FromQuery] string? guid)
         {
             return this.Run(() =>
             {
-                List<User> users = [];
-                if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(email))
-                {
+                IQueryable<User> usersQuery = DbContext.Users.AsQueryable();
+
+                if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(email) && string.IsNullOrEmpty(guid))
                     return StatusCode(400, "At least one parameter requierd");
-                }
-                else if (string.IsNullOrEmpty(name))
-                {
-                    users = DbContext.Set<User>().Where(u => u.Email.Contains(email)).ToList();
-                }
-                else if (string.IsNullOrEmpty(email))
-                {
-                    users = DbContext.Set<User>().Where(u => u.Name.Contains(name)).ToList();
-                }
-                else
-                {
-                    throw new ApiException(400, "Bad request");
-                }
 
-                if (users.Count == 0)
-                {
-                    throw new ApiException(400, "No user found");
-                }
+                if (!string.IsNullOrEmpty(name))
+                    usersQuery = usersQuery.Where(u => u.Name.Contains(name));
+                if (!string.IsNullOrEmpty(email))
+                    usersQuery = usersQuery.Where(u => u.Email.Contains(email));
+                if (!string.IsNullOrEmpty(guid))
+                    usersQuery = usersQuery.Where(u => u.Cards.Any(c => c.Code.ToString() == guid));
 
-                return StatusCode(200, users.Select(u => new
+                return StatusCode(200, usersQuery.Select(u => new
                     {
+                        id = u.Id,
                         name = u.Name,
                         email = u.Email,
                         birthDate = u.BirthDate,
                         creationDate = u.CreationDate,
+                        role = u.Role,
                     }
                 ));
             });
