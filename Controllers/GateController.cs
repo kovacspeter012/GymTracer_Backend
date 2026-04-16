@@ -50,7 +50,8 @@ namespace GymTracer.Controllers
                     bool hasValidTicket = dbContext.UserTickets.Any(ut =>
                         ut.UserId == dbCard.UserId &&
                         !ut.Ticket.TrainingId.HasValue &&
-                        ut.ExpirationDate > tokenHandler.Now()
+                        ut.ExpirationDate > tokenHandler.Now() &&
+                        (ut.Ticket.Type == Ticket_Type.monthly || ut.UsageAmount > 0)
                     );
                     if (!hasValidTicket)
                         return BadRequest("A felhasználónak nincs érvényes jegye.");
@@ -65,7 +66,7 @@ namespace GymTracer.Controllers
 
                 dbContext.SaveChanges();
 
-                return Ok("Sikeres kártyahasználat!");
+                return Ok(new { message = "Sikeres kártyahasználat!"});
             });
         }
     }
