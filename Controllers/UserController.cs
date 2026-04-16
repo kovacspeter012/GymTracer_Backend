@@ -500,9 +500,10 @@ namespace GymTracer.Controllers
             });
         }
         
+        public record ModifyRoleOfUserDto(User_Role role);
         [HttpPut("{id}/role")]
         [Authorize(Roles = nameof(User_Role.admin))]
-        public IActionResult ModifyRoleOfUser(int id, [FromBody] User_Role role)
+        public IActionResult ModifyRoleOfUser(int id, [FromBody] ModifyRoleOfUserDto roleDto)
         {
             return this.Run(() =>
             {
@@ -512,9 +513,9 @@ namespace GymTracer.Controllers
 
                 var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
 
-                if (user != null)
+                if (user != null && Enum.IsDefined(roleDto.role))
                 {
-                    user.Role = role;
+                    user.Role = roleDto.role;
                 }
                 else
                 {
@@ -528,7 +529,7 @@ namespace GymTracer.Controllers
                 DbContext.Update(user);
                 DbContext.SaveChanges();
 
-                return StatusCode(200, "User role has been changed!");
+                return StatusCode(200, new { message = "User role has been changed!"});
             });
 
         }
