@@ -331,11 +331,16 @@ namespace GymTracer.Controllers
                         throw new ApiException(400, "User not found");
                     }
 
-                    var training = DbContext.Set<Training>().FirstOrDefault(u => u.Id == training_id && u.Active && u.EndTime >= tokenHandler.Now());
+                    var training = DbContext.Set<Training>().Include(t=> t.Trainer)
+                                                            .FirstOrDefault(u => u.Id == training_id && u.Active && u.EndTime >= tokenHandler.Now());
 
                     if (training == null)
                     {
                         throw new ApiException(400, "No training avaible with this id");
+                    }
+                    if (training.Trainer.Id == id)
+                    {
+                        throw new ApiException(400, "You cannot apply to your own training");
                     }
 
                     var userNumOnTraining = DbContext.Set<TrainingUser>().Where(tu => tu.TrainingId == training.Id && tu.OnWaitinglist == false).Count();
