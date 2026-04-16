@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace GymTracer.Controllers
 {
@@ -151,7 +152,16 @@ namespace GymTracer.Controllers
             {
                 if (IsAuthorized(id, calledFromOtherController))
                 {
-                    using var transaction = DbContext.Database.BeginTransaction();
+                    IDbContextTransaction? tx = null;
+                    try
+                    {
+                        tx = DbContext.Database.BeginTransaction();
+                    }
+                    catch
+                    {
+                        tx = null;
+                    }
+
                     string loggedInUserId;
                     try
                     {
@@ -242,7 +252,8 @@ namespace GymTracer.Controllers
                     DbContext.Set<UserTicket>().Add(newUserTicket);
                     DbContext.SaveChanges();
 
-                    transaction.Commit();
+                    tx?.Commit();
+                    tx?.Dispose();
 
                     return StatusCode(201, new
                     {
