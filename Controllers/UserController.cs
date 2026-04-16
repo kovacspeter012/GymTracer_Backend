@@ -39,7 +39,8 @@ namespace GymTracer.Controllers
                     var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == user!.Id);
 
                     return StatusCode(200, new
-                    {
+                    {       
+                            id = id,
                             name = user!.Name,
                             email = user.Email,
                             birthDate = user.BirthDate,
