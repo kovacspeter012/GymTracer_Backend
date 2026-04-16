@@ -44,6 +44,7 @@ namespace GymTracer.Controllers
                             email = user.Email,
                             birthDate = user.BirthDate,
                             creationDate = user.CreationDate,
+                            role = user.Role
                     });
                 }
                 else
@@ -71,11 +72,9 @@ namespace GymTracer.Controllers
                     if (!EmailRegex().Match(userToModifyWith.Email).Success)
                         return BadRequest(new { error = "Az email címnek validnak kell lennie" });
 
-                    var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var dbUser = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
 
-                    var loggedInUser = DbContext.Set<User>().FirstOrDefault(u => u.Id.ToString() == loggedInUserId);
-
-                    if (userToModifyWith.Email != loggedInUser!.Email)
+                    if (userToModifyWith.Email != dbUser!.Email)
                     {
                         var isUsedEmail = DbContext.Users.Any(u => u.Email == userToModifyWith.Email);
                         if (isUsedEmail)
