@@ -51,7 +51,8 @@ namespace GymTracer.Controllers
                         ut.UserId == dbCard.UserId &&
                         !ut.Ticket.TrainingId.HasValue &&
                         ut.ExpirationDate > tokenHandler.Now() &&
-                        (ut.Ticket.Type == Ticket_Type.monthly || ut.UsageAmount > 0)
+                        (ut.Ticket.Type == Ticket_Type.monthly ||
+                        (ut.Ticket.MaxUsage.HasValue && ut.UsageAmount < ut.Ticket.MaxUsage.Value))
                     );
                     if (!hasValidTicket)
                         return BadRequest("A felhasználónak nincs érvényes jegye.");
@@ -115,7 +116,9 @@ namespace GymTracer.Controllers
                         if (ticketToUse == null)
                         {
                             ticketToUse = activeTickets
-                                .Where(ut => (ut.Ticket.Type == Ticket_Type.daily || ut.Ticket.Type == Ticket_Type.x_usage) && ut.UsageAmount > 0)
+                                .Where(ut => (ut.Ticket.Type == Ticket_Type.daily || ut.Ticket.Type == Ticket_Type.x_usage)
+                                             && ut.Ticket.MaxUsage.HasValue
+                                             && ut.UsageAmount < ut.Ticket.MaxUsage.Value)
                                 .OrderBy(ut => ut.ExpirationDate)
                                 .FirstOrDefault();
 
