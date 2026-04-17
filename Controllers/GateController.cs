@@ -120,7 +120,7 @@ namespace GymTracer.Controllers
                                 .FirstOrDefault();
 
                             if (ticketToUse == null)
-                                return BadRequest("A felhasználónak nincs érvényes bérlete, vagy elfogyott az alkalma.");
+                                return BadRequest("A felhasználónak nincs érvényes bérlete.");
 
                             ticketToUse.UsageAmount += 1;
                         }
