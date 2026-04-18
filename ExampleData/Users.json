@@ -3,7 +3,7 @@
             "Id": 1,
             "Name": "Adminisztrátor Anna",
             "Email": "admin@gym.hu",
-            "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+            "Password": "$pbkdf2$sha256$10$9EpqZbBCER6wbi+1cQZIrA==$b27NmGCjC5ll/Xx9tp4atkezneCrwoHuQ7/972kLuDAlXaiTqkHXUwT809/wU+Zr",
             "BirthDate": "1985-05-10T00:00:00",
             "Role": 3,
             "CreationDate": "2026-05-01T08:00:00",
@@ -13,7 +13,7 @@
             "Id": 2,
             "Name": "Recepciós Ricsi",
             "Email": "ricsi.staff@gym.hu",
-            "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+            "Password": "$pbkdf2$sha256$10$X2mISW/tTvaFPjHNmiVzHg==$MTCqu9sBR+HyMZ5L+WAsuWdu2VK90AncgJpJh/igzGSZxvbudqA8D+tKfHwrXpDm",
             "BirthDate": "1995-02-15T00:00:00",
             "Role": 2,
             "CreationDate": "2026-05-01T08:00:00",
@@ -23,7 +23,7 @@
             "Id": 3,
             "Name": "Edző Elemér",
             "Email": "elemer.edzo@gym.hu",
-            "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+            "Password": "$pbkdf2$sha256$10$UwmbS+nW7ONxybIb7ZKkwg==$PKmOZkVG5LCfFYHCEG5XtprjBI1Hh8ZoxXoIolKRVWaGX8uubwipc7OACmqhu34p",
             "BirthDate": "1990-11-20T00:00:00",
             "Role": 1,
             "CreationDate": "2026-05-01T08:00:00",
@@ -72,8 +72,8 @@
         {
             "Id": 8,
             "Name": "Kovács János",
-            "Email": "janos.kovacs@gmail.com",
-            "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
+            "Email": "janos.kovacs@email.com",
+            "Password": "$pbkdf2$sha256$10$OMmHJZpe1+i+mqmppuZl7g==$e5iKNiO0PRFvk4cH2rhX0MfwLjm8NYuQpIpZ1M/T3E/0TejxJV3f8PQCPIH1qoWo",
             "BirthDate": "2001-03-12T00:00:00",
             "Role": 0,
             "CreationDate": "2026-05-01T09:15:00",
@@ -82,7 +82,7 @@
         {
             "Id": 9,
             "Name": "Nagy Anna",
-            "Email": "anna.nagy@gmail.com",
+            "Email": "anna.nagy@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1998-07-25T00:00:00",
             "Role": 0,
@@ -92,7 +92,7 @@
         {
             "Id": 10,
             "Name": "Szabó Péter",
-            "Email": "peter.szabo@gmail.com",
+            "Email": "peter.szabo@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "2003-11-05T00:00:00",
             "Role": 0,
@@ -102,7 +102,7 @@
         {
             "Id": 11,
             "Name": "Tóth Mária",
-            "Email": "maria.toth@gmail.com",
+            "Email": "maria.toth@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1995-12-18T00:00:00",
             "Role": 0,
@@ -112,7 +112,7 @@
         {
             "Id": 12,
             "Name": "Kiss László",
-            "Email": "laszlo.kiss@gmail.com",
+            "Email": "laszlo.kiss@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1990-08-30T00:00:00",
             "Role": 0,
@@ -122,7 +122,7 @@
         {
             "Id": 13,
             "Name": "Varga Éva",
-            "Email": "eva.varga@gmail.com",
+            "Email": "eva.varga@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1987-02-14T00:00:00",
             "Role": 0,
@@ -132,7 +132,7 @@
         {
             "Id": 14,
             "Name": "Molnár Gábor",
-            "Email": "gabor.molnar@gmail.com",
+            "Email": "gabor.molnar@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1992-05-06T00:00:00",
             "Role": 0,
@@ -142,7 +142,7 @@
         {
             "Id": 15,
             "Name": "Farkas Judit",
-            "Email": "judit.farkas@gmail.com",
+            "Email": "judit.farkas@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1999-09-17T00:00:00",
             "Role": 0,
@@ -152,7 +152,7 @@
         {
             "Id": 16,
             "Name": "Balogh Zoltán",
-            "Email": "zoltan.balogh@gmail.com",
+            "Email": "zoltan.balogh@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "2000-01-01T00:00:00",
             "Role": 0,
@@ -162,7 +162,7 @@
         {
             "Id": 17,
             "Name": "Papp Andrea",
-            "Email": "andrea.papp@gmail.com",
+            "Email": "andrea.papp@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1985-06-23T00:00:00",
             "Role": 0,
@@ -172,7 +172,7 @@
         {
             "Id": 18,
             "Name": "Takács Miklós",
-            "Email": "miklos.takacs@gmail.com",
+            "Email": "miklos.takacs@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1994-04-14T00:00:00",
             "Role": 0,
@@ -182,7 +182,7 @@
         {
             "Id": 19,
             "Name": "Juhász Katalin",
-            "Email": "katalin.juhasz@gmail.com",
+            "Email": "katalin.juhasz@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1996-03-08T00:00:00",
             "Role": 0,
@@ -192,7 +192,7 @@
         {
             "Id": 20,
             "Name": "Lakatos Csaba",
-            "Email": "csaba.lakatos@gmail.com",
+            "Email": "csaba.lakatos@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1991-10-31T00:00:00",
             "Role": 0,
@@ -202,7 +202,7 @@
         {
             "Id": 21,
             "Name": "Mészáros Krisztina",
-            "Email": "krisztina.meszaros@gmail.com",
+            "Email": "krisztina.meszaros@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "2002-08-11T00:00:00",
             "Role": 0,
@@ -212,7 +212,7 @@
         {
             "Id": 22,
             "Name": "Simon Attila",
-            "Email": "attila.simon@gmail.com",
+            "Email": "attila.simon@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1989-12-05T00:00:00",
             "Role": 0,
@@ -222,7 +222,7 @@
         {
             "Id": 23,
             "Name": "Fekete Ágnes",
-            "Email": "agnes.fekete@gmail.com",
+            "Email": "agnes.fekete@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1997-05-22T00:00:00",
             "Role": 0,
@@ -232,7 +232,7 @@
         {
             "Id": 24,
             "Name": "Tóth Zsolt",
-            "Email": "zsolt.toth@gmail.com",
+            "Email": "zsolt.toth@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1986-07-07T00:00:00",
             "Role": 0,
@@ -242,7 +242,7 @@
         {
             "Id": 25,
             "Name": "Szilágyi Ildikó",
-            "Email": "ildiko.szilagyi@gmail.com",
+            "Email": "ildiko.szilagyi@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1993-02-28T00:00:00",
             "Role": 0,
@@ -252,7 +252,7 @@
         {
             "Id": 26,
             "Name": "Török Balázs",
-            "Email": "balazs.torok@gmail.com",
+            "Email": "balazs.torok@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1998-11-16T00:00:00",
             "Role": 0,
@@ -262,7 +262,7 @@
         {
             "Id": 27,
             "Name": "Fehér Dóra",
-            "Email": "dora.feher@gmail.com",
+            "Email": "dora.feher@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "2004-01-09T00:00:00",
             "Role": 0,
@@ -272,7 +272,7 @@
         {
             "Id": 28,
             "Name": "Rácz Tamás",
-            "Email": "tamas.racz@gmail.com",
+            "Email": "tamas.racz@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1995-10-24T00:00:00",
             "Role": 0,
@@ -282,7 +282,7 @@
         {
             "Id": 29,
             "Name": "Kis Viktória",
-            "Email": "viktoria.kis@gmail.com",
+            "Email": "viktoria.kis@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1992-03-19T00:00:00",
             "Role": 0,
@@ -292,7 +292,7 @@
         {
             "Id": 30,
             "Name": "Gál Gergő",
-            "Email": "gergo.gal@gmail.com",
+            "Email": "gergo.gal@email.com",
             "Password": "$pbkdf2$sha256$10$RzwqSi7MgrYQEcgSthPT7A==$db3Q+KxFdWEHFCemUKpLK7ygLIlIlChcJD+JJE0ltzXhNxobieAX2KjfnMVGJnyG",
             "BirthDate": "1990-08-08T00:00:00",
             "Role": 0,
