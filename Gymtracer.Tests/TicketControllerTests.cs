@@ -17,12 +17,6 @@ namespace Gymtracer.Tests
 {
     public class TicketControllerTests
     {
-        private Action<DbContextOptionsBuilder> GetOptions()
-        {
-            var dbName = Guid.NewGuid().ToString();
-            return options => options.UseInMemoryDatabase(databaseName: dbName);
-        }
-
         protected ControllerContext GetControllerContext(string id)
         {
             var claims = new[] { new Claim(ClaimTypes.NameIdentifier, id) };
@@ -46,7 +40,6 @@ namespace Gymtracer.Tests
             }
             else
             {
-                // Unauthenticated user
                 var identity = new ClaimsIdentity();
                 var principal = new ClaimsPrincipal(identity);
                 controller.ControllerContext = new ControllerContext
@@ -66,7 +59,6 @@ namespace Gymtracer.Tests
             var db = new GymTracerDbContext(options);
             db.Database.EnsureCreated();
             
-            // clear existing seeded entries to allow accurate testing.
             db.Set<UserTicket>().RemoveRange(db.Set<UserTicket>());
             db.Set<Ticket>().RemoveRange(db.Set<Ticket>());
             db.Set<Training>().RemoveRange(db.Set<Training>());
@@ -148,7 +140,6 @@ namespace Gymtracer.Tests
             Assert.Empty(values);
         }
 
-        // GetTicketsOfAUser
         [Fact]
         public void GetTicketsOfAUser_Throws401_WhenUnauthorized()
         {
@@ -160,7 +151,6 @@ namespace Gymtracer.Tests
             
             var mockTokenHandler = GetTokenHandlerMock(DateTime.UtcNow);
             
-            // Explicitly set 1001 context using GetControllerContext
             var controller = CreateController(db, mockTokenHandler);
             controller.ControllerContext = GetControllerContext("1001");
 
@@ -222,7 +212,6 @@ namespace Gymtracer.Tests
             Assert.Empty(result.Value as IEnumerable<object>);
         }
 
-        // GetUnpaidTIcketsOfAUser
         [Fact]
         public void GetUnpaidTIcketsOfAUser_Throws401_WhenUnauthorized()
         {
@@ -293,7 +282,6 @@ namespace Gymtracer.Tests
             Assert.Empty(result.Value as IEnumerable<object>);
         }
 
-        // PostTicketAndPayment
         [Fact]
         public void PostTicketAndPayment_Throws401_WhenUnauthorized()
         {
@@ -366,7 +354,6 @@ namespace Gymtracer.Tests
             Assert.Null(p.PaymentDate);
         }
 
-        // PatchPayment
         [Fact]
         public void PatchPayment_Throws401_WhenUnauthorized()
         {
