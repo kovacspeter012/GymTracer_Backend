@@ -90,6 +90,12 @@ namespace GymTracer
 
             app.MapControllers();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<GymTracerDbContext>();
+                db.Database.Migrate();
+            }
+
             app.Run();
         }
 
