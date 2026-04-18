@@ -281,17 +281,20 @@ namespace GymTracer.Controllers
                         throw new ApiException(400, "A jegy már ki lett fizetve");
                     }
 
-                    var userTraining = DbContext.Set<TrainingUser>().SingleOrDefault(tu => tu.UserId == id && tu.TrainingId == paymentToBePayed.Ticket.TrainingId);
+                    if (paymentToBePayed.Ticket.TrainingId.HasValue)
+                    {
+                        var userTraining = DbContext.Set<TrainingUser>().SingleOrDefault(tu => tu.UserId == id && tu.TrainingId == paymentToBePayed.Ticket.TrainingId);
                     
-                    if (userTraining == null)
-                    {
-                        throw new ApiException(400, "Nincs ilyen jelentkezés");
+                        if (userTraining == null)
+                        {
+                            throw new ApiException(400, "Nincs ilyen jelentkezés");
+                        }
+                        else if (userTraining.OnWaitinglist)
+                        {
+                            throw new ApiException(400, "A jegy nem vásárolható meg amíg várólistán van.");
+                        }
+
                     }
-                    else if (userTraining.OnWaitinglist)
-                    {
-                        throw new ApiException(400, "A jegy nem vásárolható meg amíg várólistán van.");
-                    }
-                
 
                     paymentToBePayed.Payment.PaymentDate = tokenHandler.Now();
                     DbContext.SaveChanges();

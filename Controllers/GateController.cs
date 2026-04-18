@@ -51,6 +51,7 @@ namespace GymTracer.Controllers
                         ut.UserId == dbCard.UserId &&
                         !ut.Ticket.TrainingId.HasValue &&
                         ut.ExpirationDate > tokenHandler.Now() &&
+                        ut.Payment.PaymentDate.HasValue &&
                         (ut.Ticket.Type == Ticket_Type.monthly ||
                         (ut.Ticket.MaxUsage.HasValue && ut.UsageAmount < ut.Ticket.MaxUsage.Value))
                     );
@@ -105,7 +106,8 @@ namespace GymTracer.Controllers
                             .Include(ut => ut.Ticket)
                             .Where(ut => ut.UserId == dbCard.UserId &&
                                          !ut.Ticket.TrainingId.HasValue &&
-                                         ut.ExpirationDate > now)
+                                         ut.ExpirationDate > now &&
+                                         ut.Payment.PaymentDate.HasValue)
                             .ToList();
 
                         var ticketToUse = activeTickets
