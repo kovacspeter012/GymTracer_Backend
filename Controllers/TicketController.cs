@@ -98,12 +98,12 @@ namespace GymTracer.Controllers
                     }
                     else
                     {
-                        throw new ApiException(404, "No ticket found");
+                        throw new ApiException(404, "Nem található jegy");
                     }
                 }
                 else
                 {
-                    throw new ApiException(401, "Unauthorized");
+                    throw new ApiException(401, "Nem engedélyezett");
                 }
             });
         }
@@ -133,12 +133,12 @@ namespace GymTracer.Controllers
                     }
                     else
                     {
-                        throw new ApiException(404, "No card found");
+                        throw new ApiException(404, "Nincs ilyen kártya");
                     }
                 }
                 else
                 {
-                    throw new ApiException(401, "Unauthorized");
+                    throw new ApiException(401, "Nem engedélyezett");
                 }
             });
         }
@@ -163,7 +163,7 @@ namespace GymTracer.Controllers
                     }
                     if (loggedInUserId == "")
                     {
-                        throw new ApiException(400, "Issuer can not be identified");
+                        throw new ApiException(400, "A kibocsátó személy azonosítása sikertelen");
                     }
 
 
@@ -176,7 +176,7 @@ namespace GymTracer.Controllers
 
                     if (ticket == null)
                     {
-                        throw new ApiException(400, "No ticket found");
+                        throw new ApiException(400, "Nincs ilyen jegy");
                     }
 
                     Payment newPayment = new Payment();
@@ -256,7 +256,7 @@ namespace GymTracer.Controllers
                 }
                 else
                 {
-                    throw new ApiException(401, "Unauthorized");
+                    throw new ApiException(401, "Nem engedélyezett");
                 }
             });
         }
@@ -308,7 +308,7 @@ namespace GymTracer.Controllers
                 }
                 else
                 {
-                    throw new ApiException(401, "Unauthorized");
+                    throw new ApiException(401, "Nem engedélyezett");
                 }
             });
         }
@@ -331,7 +331,7 @@ namespace GymTracer.Controllers
 
             if (user == null)
             {
-                throw new ApiException(404, "User not found");
+                throw new ApiException(404, "Felhasználó nem létezik");
             }
             if (id.ToString() == loggedInUserId || (loggedInUser!.Role == User_Role.staff || loggedInUser.Role == User_Role.admin))
             {
