@@ -36,8 +36,6 @@ namespace GymTracer.Controllers
                 {
                     var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
 
-                    var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == user!.Id);
-
                     var wentInToday = DbContext.Set<UsageLog>().Any(log => log.Card.UserId == id 
                                                                          && log.Gate == Usage_Gates.main_entrance
                                                                          && log.UseDate >= tokenHandler.Now().Date
