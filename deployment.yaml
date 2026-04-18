@@ -30,7 +30,7 @@ spec:
         app: gymtracer-mariadb
     spec:
       containers:
-       - name: mariadb-container
+        - name: mariadb-container
           image: mariadb:12
           ports:
             - containerPort: 3306
