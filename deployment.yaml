@@ -106,7 +106,7 @@ spec:
     spec:
       containers:
         - name: gymtracer-backend-container
-          image: ghcr.io/bendehuba/gymtracer-backend:1773751988
+          image: ghcr.io/bendehuba/gymtracer-backend:1776546039
           ports:
             - containerPort: 8080
           env:
