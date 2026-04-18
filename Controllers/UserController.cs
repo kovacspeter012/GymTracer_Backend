@@ -38,6 +38,11 @@ namespace GymTracer.Controllers
 
                     var cardsOfUser = DbContext.Set<Card>().Where(c => c.UserId == user!.Id);
 
+                    var wentInToday = DbContext.Set<UsageLog>().Any(log => log.Card.UserId == id 
+                                                                         && log.Gate == Usage_Gates.main_entrance
+                                                                         && log.UseDate >= tokenHandler.Now().Date
+                                                                         && log.UseDate < tokenHandler.Now().Date.AddDays(1));
+
                     return StatusCode(200, new
                     {       
                             id = id,
@@ -45,7 +50,8 @@ namespace GymTracer.Controllers
                             email = user.Email,
                             birthDate = user.BirthDate,
                             creationDate = user.CreationDate,
-                            role = user.Role
+                            role = user.Role,
+                            wentInToday = wentInToday,
                     });
                 }
                 else
