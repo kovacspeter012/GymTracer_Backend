@@ -332,7 +332,7 @@ namespace GymTracer.Controllers
                     var user = DbContext.Set<User>().FirstOrDefault(u => u.Id == id);
                     if (user == null)
                     {
-                        throw new ApiException(400, "Nincs ilyen nfelhasználó");
+                        throw new ApiException(400, "Nincs ilyen felhasználó");
                     }
 
                     var training = DbContext.Set<Training>().Include(t=> t.Trainer)
@@ -374,7 +374,6 @@ namespace GymTracer.Controllers
                         {
                             if (returnedObjectResult.StatusCode == 201)
                             {
-                                //TODO: email küldése
                                 DbContext.Set<TrainingUser>().Add(newTrainingUser);
                                 DbContext.SaveChanges();
                             }
