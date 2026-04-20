@@ -109,7 +109,7 @@ namespace GymTracer
         {
             options.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Unique Bearer Token API",
+                Title = "GymTracer backend swagger dokumentáció",
                 Version = "v1"
             });
 

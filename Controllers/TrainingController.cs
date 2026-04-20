@@ -405,7 +405,6 @@ namespace GymTracer.Controllers
                 foreach (Ticket toRemove in ticketsToRemove)
                 {
                     toRemove.IsActive = false;
-                    // TODO: megnézni hogy ki lett-e fizetve valakinek, ha igen, refundolni
                 }
 
                 foreach (Ticket incomingTicket in training.Tickets)
@@ -505,7 +504,6 @@ namespace GymTracer.Controllers
                     return BadRequest("A már megkezdett vagy befejeződött edzéseket nem lehet törölni!");
 
                 dbTraining.Active = false;
-                // TODO: jegyek inaktiválása, és megnézni hogy ki lett-e fizetve valakinek, ha igen, refundolni
 
                 dbContext.SaveChanges();
 
@@ -589,7 +587,6 @@ namespace GymTracer.Controllers
 
             trainingValidator.Validate(t => t.Image, "edzés kép")
                 .NotNullOrEmpty();
-            // TODO: ellenőrizni valós kép-e
 
             trainingValidator.Validate(t => t.MaxParticipant, "résztvevő szám")
                 .GreaterThan(0ul)

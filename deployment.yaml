@@ -125,7 +125,7 @@ spec:
             - name: PasswordHandler__SaltLength
               value: "16"
             - name: AuthHandler__ExpirationInMinutes
-              value: "5"
+              value: "30"
             - name: AuthHandler__TokenLength
               value: "128"
             - name: Logging__LogLevel__Default
