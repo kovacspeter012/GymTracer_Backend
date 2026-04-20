@@ -1,3 +1,8 @@
+-- The application automatically generates the database via EF Core Migrations on startup. The included SQL script is provided only as a backup/reference. You do not need to run this manually before starting the app.
+
+CREATE DATABASE gymtracerdb;
+USE gymtracerdb;
+
 CREATE TABLE `Users` (
     `Id` bigint NOT NULL AUTO_INCREMENT,
     `Name` varchar(100) NOT NULL,
